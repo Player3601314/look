@@ -1,0 +1,17 @@
+{
+  "header": {
+    "home": "Home",
+    "branches": "Branches",
+    "contact": "Contact",
+    "cart": "Cart"
+  },
+  "button": {
+    "add": "Add To Cart"
+  },
+  "price": {
+    "value": "uzs"
+  },
+  "created": {
+    "creater": "This site was created by Abdullayev Muhammad"
+  }
+}

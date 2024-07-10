@@ -1,0 +1,17 @@
+{
+  "header": {
+    "home": "Asosiy Sahifa",
+    "branches": "Filiallar",
+    "contact": "Kontaktlar",
+    "cart": "Savat"
+  },
+  "button": {
+    "add": "Savatga Qo'shish"
+  },
+  "price": {
+    "value": "so'm"
+  },
+  "created": {
+    "creater": "Ushbu sayt Abdullayev Muhammad tomonidan yaratildi"
+  }
+}
