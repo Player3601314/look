@@ -7,6 +7,9 @@ import arrowIcon from "../../assets/arrow.svg"
 import closeImg from "../../assets/close.svg"
 import searchIcon from "../../assets/search.svg"
 import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
+import { IoClose, IoMapOutline, IoMenu } from "react-icons/io5";
+import { AiOutlineHome } from "react-icons/ai";
+import { MdOutlineContactPhone } from "react-icons/md";
 
 const Nav = (props) => {
 
@@ -15,9 +18,11 @@ const Nav = (props) => {
   const [lang, setLang] = useState(0)
   const [showLang, setShowLang] = useState(false)
   const [kart, setKart] = useState(false)
+  const [nav, setNav] = useState(false)
   const [item, setItem] = useState(null)
   const [price, setPrice] = useState(0)
   const storageData = props.storageData
+  const setStorageData = props.setStorageData
   const itemStorage = localStorage.getItem("cards")
   const dataArr = JSON.parse(itemStorage)
 
@@ -27,7 +32,7 @@ const Nav = (props) => {
       setItem(0)
     }
     else if (storageData === null || storageData.length === 0) {
-      props.setStorageData(dataArr)
+      setStorageData(dataArr)
       storageData.map((item) => {
         setPrice(item.price)
       })
@@ -64,8 +69,8 @@ const Nav = (props) => {
   }
 
   const clearStorage = () => {
-    localStorage.clear()
-    props.setStorageData([])
+    localStorage.removeItem("cards")
+    setStorageData([])
   }
 
   const handleRemove = (data, id) => {
@@ -76,9 +81,9 @@ const Nav = (props) => {
 
     const filterData = data.filter(item => item.id !== id);
     if (filterData.length === 0) {
-      props.setStorageData([])
+      setStorageData([])
     }
-    props.setStorageData(filterData)
+    setStorageData(filterData)
     localStorage.setItem('cards', JSON.stringify(filterData));
   }
 
@@ -103,8 +108,9 @@ const Nav = (props) => {
     }
 
     setPrice(existingData.reduce((acc, curr) => acc + curr.price, 0));
-    props.setStorageData(existingData);
+    setStorageData(existingData);
     localStorage.setItem("cards", JSON.stringify(existingData));
+    localStorage.setItem("order", JSON.stringify({ order: false }))
   };
 
   const handleRemovePrice = (item) => {
@@ -116,29 +122,37 @@ const Nav = (props) => {
       existingData[itemIndex].price -= Number(item.softPrice);
 
       setPrice(existingData.reduce((acc, curr) => acc + curr.price, 0));
-      props.setStorageData(existingData);
+      setStorageData(existingData);
       localStorage.setItem("cards", JSON.stringify(existingData));
     }
   };
 
-
-
   const getClass = ({ isActive, isPending }) => isPending ? "pending" : isActive ? "active" : "navlinks"
+
+  const handleNav = () => {
+    let root = document.getElementsByTagName("html")[0]
+    root.style.overflowY = nav ? "auto" : "hidden"
+
+    setNav(!nav)
+  }
 
   return (
     <>
-      <div className="w-[100%] h-[90px] bg-[#c00a27] fixed flex flex-row justify-between px-[40px] py-[20px] items-center z-10">
+      <div className="w-[100%] sm:w-[100%] h-[90px] bg-[#c00a27] fixed flex flex-row justify-between px-[40px] sm:px-[20px] py-[20px] items-center z-10">
         <div className="w-[40%] flex justify-between items-center">
-          <div className="w-[200px] h-[40px]">
-            <img src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
-          </div>
-          <div className="w-[60%] flex justify-evenly">
+          <Link to={"/"} className="w-[200px] h-[40px] sm:w-[100px] sm:h-[20px]">
+            <img
+              src="http://look.uz/assets/loook-logo-5055c421.svg"
+              className="object-cover"
+              alt="" />
+          </Link>
+          <div className="w-[60%] sm:hidden flex justify-evenly">
             <NavLink className={getClass} to={"/"}>{t("header.home")}</NavLink>
             <NavLink className={getClass} to={"/address"}>{t("header.branches")}</NavLink>
             <NavLink className={getClass} to={"/contact"}>{t("header.contact")}</NavLink>
           </div>
         </div>
-        <div className="w-[20%] flex items-center">
+        <div className="w-[20%] flex items-center sm:hidden">
           <div
             onClick={handleOpenCart}
             className="navlinks cursor-pointer">
@@ -178,7 +192,52 @@ const Nav = (props) => {
             </dir>
           )}
         </div>
+        <div className="sm:block hidden">
+          <IoMenu
+            onClick={handleNav}
+            size={30}
+            color="#fff"
+          />
+        </div>
       </div>
+
+      {nav && (
+        <>
+          <div className="w-[100%] h-[100vh] sm:block hidden fixed top-0 left-0 z-20">
+            <div onClick={handleNav} className="w-[30%] h-[100%] backdrop-blur-md fixed top-0 left-0"></div>
+            <div className="w-[70%] h-[100%] bg-[#c00a27] fixed top-0 right-0">
+              <div className="w-[100%] h-auto flex flex-col justify-between">
+                <div className="py-[20px] pl-[20px]">
+                  <IoClose
+                    onClick={handleNav}
+                    style={{ fontWeight: 'bold' }}
+                    size={30}
+                    color="#fff"
+                  />
+                </div>
+                <div className="pb-[20px] pl-[20px]">
+                  <div className="flex items-start">
+                    <AiOutlineHome color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
+                    <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/"}>{t("header.home")}</NavLink>
+                  </div>
+                </div>
+                <div className="pb-[20px] pl-[20px]">
+                  <div className="flex items-start">
+                    <IoMapOutline color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
+                    <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/address"}>{t("header.branches")}</NavLink>
+                  </div>
+                </div>
+                <div className="pb-[20px] pl-[20px]">
+                  <div className="flex items-start">
+                    <MdOutlineContactPhone color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
+                    <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/contact"}>{t("header.contact")}</NavLink>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {kart && (
         <>
@@ -233,7 +292,7 @@ const Nav = (props) => {
                             {storageData.length === 1 && (
                               <button className="ml-auto mr-[20px]">
                                 <FaTrash
-                                  onClick={() => { localStorage.clear(), props.setStorageData([]) }}
+                                  onClick={() => { localStorage.removeItem("cards"), setStorageData([]) }}
                                   size={20}
                                   color="#323232"
                                   className="text-[#c00a27]"
@@ -241,7 +300,7 @@ const Nav = (props) => {
                               </button>
                             )}
                             <div className="w-[100%] flex items-center justify-between">
-                              <img className="w-[100px] h-[95px]" src={item.img} alt="" />
+                              <img className="w-[100px] h-[95px] object-cover" src={item.img} alt="" />
                               <p className="text-[16px] w-[100px] text-center font-thin">{item.name}</p>
                             </div>
                           </div>

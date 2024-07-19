@@ -36,3 +36,18 @@ body {
 .hide-input-controls {
   @apply [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none;
 }
+
+.card-skeletion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 0.8rem;
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+.overflowNavigate::-webkit-scrollbar {
+  width: 0px;
+  height: 0px;
+}

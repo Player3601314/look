@@ -67,13 +67,13 @@ const NavNavigate = (props) => {
   };
   return (
     <div>
-      <div className="w-[95%] h-[100px] rounded-[10px] mx-auto items-center fixed top-[100px] left-[30px] backdrop-blur-[10px] flex justify-around z-[2]">
+      <div className="w-[95%] h-[100px] rounded-[10px] mx-auto items-center fixed top-[100px] left-[30px] backdrop-blur-[10px] flex justify-around z-[2] sm:px-[20px] sm:w-[100%] sm:max-w-[2000px] sm:left-0 sm:overflow-x-scroll overflowNavigate">
         {menu.map((data, index) => (
           <Fragment key={index}>
             <div
               onClick={() => scrollToSection(data.link)}
-              className="w-[80px] h-[80px] text-center items-center text-[14px] bg-[#fff] rounded-[8px] flex flex-col justify-between p-[4px]">
-              <img className="w-[35px] h-[35px] m-auto" src={data.img} alt="" />
+              className="w-[80px] h-[80px] text-center items-center text-[14px] bg-[#fff] rounded-[8px] flex flex-col justify-between p-[4px] sm:w-[100%] sm:mr-[34px] sm:px-[20px]">
+              <img className="w-[35px] h-[35px] m-auto object-cover" src={data.img} alt="" />
               <p>{data.name}</p>
             </div>
           </Fragment>

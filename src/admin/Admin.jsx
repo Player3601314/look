@@ -1,12 +1,14 @@
-import { useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { collection, deleteDoc, doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { firestorage, firestore } from "../firebase/firebase";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { IoClose } from "react-icons/io5";
-import { FaPlus } from "react-icons/fa";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ImExit } from "react-icons/im";
 import { AuthContext } from "../context/AuthContext";
+import Skeleton from "react-loading-skeleton";
+import 'react-loading-skeleton/dist/skeleton.css'
+import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
+import { IoClose } from "react-icons/io5";
 
 const Admin = () => {
   const [cards, setCards] = useState([]);
@@ -20,19 +22,29 @@ const Admin = () => {
   const { dispatch } = useContext(AuthContext)
   const navigate = useNavigate()
 
+  const [sortConfig, setSortConfig] = useState({ field: 'all', direction: 'asc' });
   const cardCollection = collection(firestore, "cards");
+  console.log(cards);
+  console.log(sortConfig);
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user"))
-    if (user.email === "") {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user || user.email === "") {
+      console.log(user?.email);
+      navigate("/");
+    } else if (user.email === "test@gmail.com") {
       console.log(user.email);
-      navigate("/")
+      navigate("/order");
     }
+
     const unsubscribe = onSnapshot(cardCollection, (snapShot) => {
       let data = [];
       snapShot.docs.forEach((doc) => {
         data.push({ ...doc.data(), id: doc.id });
       });
+
+      data = sortCardsBy([...data]);
+
       setCards(data);
     },
       (error) => {
@@ -51,7 +63,7 @@ const Admin = () => {
   };
 
   const handleUpload = (e) => {
-    const img = e.target.files[0];
+    const img = e.target.field[0];
     const imgRef = ref(firestorage, `cards/${img.name}`);
 
     uploadBytes(imgRef, img).then((snapshot) => {
@@ -97,18 +109,43 @@ const Admin = () => {
     setInpPrice(price);
     setType(type)
     setDocId(id);
-    setShowModal(true);
+    setShowModal(!showModal);
   };
 
   const handleDeleteModal = (id) => {
+    let root = document.getElementsByTagName("html")[0];
+    root.style.overflowY = deleteModal ? "auto" : "hidden";
+
     setDocId(id)
-    setDeleteModal(true)
+    setDeleteModal(!deleteModal)
   }
 
   const handleDelteDoc = async () => {
     await deleteDoc(doc(firestore, "cards", docId));
     setDeleteModal(false)
   }
+
+  const sortCardsBy = (data) => {
+    const { field, direction } = sortConfig;
+
+    return data.sort((a, b) => {
+      let comparison = 0;
+      if (a[field] > b[field]) {
+        comparison = 1;
+      } else if (a[field] < b[field]) {
+        comparison = -1;
+      }
+      return direction === 'asc' ? comparison : comparison * -1;
+    });
+  };
+
+  const handleSort = (field) => {
+    const direction = field === sortConfig.field && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+    setSortConfig({ field, direction });
+
+    const sortedData = sortCardsBy([...cards]);
+    setCards(sortedData);
+  };
 
   const handleLogOut = () => {
     const data = localStorage.setItem("user", null)
@@ -117,38 +154,144 @@ const Admin = () => {
 
   return (
     <>
-      <div className="w-[100%] h-[60px] flex justify-between px-[80px] items-center">
-        <ImExit className="w-auto h-[50%] text-red-500 hover:text-[red] cursor-pointer" onClick={handleLogOut} />
-        <Link className="h-[100%] px-[14px] rounded-[50px] flex justify-between items-center bg-yellow-400 hover:bg-[yellow] text-orange-500 hover:text-[#ffae00]" to={"/admin/create"}>
-          <h2 className="text-[20px]">Yangi Menu qushish</h2>
-          <FaPlus className="w-auto h-[40%]" />
-        </Link>
-      </div>
-      <div id="appetizers" className="w-[90%] grid grid-cols-6 gap-[20px] m-auto mt-[40px]">
-        {cards.map((data) => (
-          <div className="w-[100%] h-[350px] bg-[#fff] rounded-[10px] p-[16px] flex flex-col" key={data.id}>
-            <img src={data.img} className="w-[150px] h-[150px] mx-auto object-cover" alt="" />
-            <h3 className="mt-[20px] font-medium text-[#c00a27]">{data.name}</h3>
-            <p className="mt-[10px] text-[#309b42]">{data.price} {"so'm"}</p>
-            <p className="text-yellow-500">Tur: {data.type}</p>
-            <button
-              onClick={() => handleShowModal(data.name, data.price, data.type, data.id)}
-              className="bg-[#f6f8f9] hover:bg-[#ffae00] py-[8px] mt-auto rounded-[8px] duration-200">Update</button>
-            <button
-              onClick={() => handleDeleteModal(data.id)}
-              className="bg-[#f6f8f9] hover:bg-[#c00a27] py-[8px] mt-auto rounded-[8px] duration-200">Delete</button>
+      <div className="w-[100%] h-[100vh] flex justify-between">
+        <div className="w-[25%] h-[100vh] fixed top-0 left-0 bg-[#c00a27] flex flex-col justify-between py-[40px] px-[20px] text-center items-center">
+          <Link to={"/"} className="w-[200px] h-[60px] mx-auto">
+            <img src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
+          </Link>
+          <div className="w-[100%] text-[35px] font-bold text-[orange]">
+            <h2>Saralash</h2>
           </div>
-        ))}
-      </div>
+          <div className="w-[80%] h-[45%] flex flex-col justify-evenly">
+            <button
+              onClick={() => handleSort('all')}
+              className={`w-[100%] text-left rounded-[6px] ${sortConfig.field === "all" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+              <div className="py-[4px] px-[20px] text-[20px] font-semibold">Hammasi</div>
+            </button>
+
+            <button
+              onClick={() => handleSort('name')}
+              className={`w-[100%] items-center rounded-[6px] ${sortConfig.field === "name" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+              <div className="py-[4px] px-[20px] text-[20px] font-semibold flex justify-between">
+                <p>Nomi</p>
+                {sortConfig.field === "name" && sortConfig.direction === "asc" && (
+                  <IoIosArrowUp color="#ff0000" size={30} className="ml-auto" />
+                )}
+                {sortConfig.field === "name" && sortConfig.direction === "desc" && (
+                  <IoIosArrowDown color="#ff0000" size={30} />
+                )}
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleSort('price')}
+              className={`w-[100%] items-center rounded-[6px] ${sortConfig.field === "price" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+              <div className="py-[4px] px-[20px] text-[20px] font-semibold flex justify-between">
+                <p>Narxi</p>
+                {sortConfig.field === "price" && sortConfig.direction === "asc" && (
+                  <IoIosArrowUp color="#ff0000" size={30} />
+                )}
+                {sortConfig.field === "price" && sortConfig.direction === "desc" && (
+                  <IoIosArrowDown color="#ff0000" size={30} />
+                )}
+              </div>
+            </button>
+
+            <button
+              onClick={() => handleSort('type')}
+              className={`w-[100%] items-center rounded-[6px] ${sortConfig.field === "type" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+              <div className="py-[4px] px-[20px] text-[20px] font-semibold flex justify-between">
+                <p>Turi</p>
+                {sortConfig.field === "type" && sortConfig.direction === "asc" && (
+                  <IoIosArrowUp color="#ff0000" size={30} className="ml-auto" />
+                )}
+                {sortConfig.field === "type" && sortConfig.direction === "desc" && (
+                  <IoIosArrowDown color="#ff0000" size={30} />
+                )}
+              </div>
+            </button>
+
+          </div>
+          <div
+            onClick={handleLogOut}
+            className="w-[80%] h-auto mx-auto px-[20px] py-[4px] flex justify-between items-center cursor-pointer rounded-[4px] bg-[red] text-[white] hover:bg-[white] hover:text-[red] duration-200">
+            <ImExit width={30} height={30} size={30} />
+            <button className="text-[30px]">Chiqish</button>
+          </div>
+        </div>
+        <div className="w-[75%] ml-auto">
+          <div className="w-[85%] mx-auto flex justify-between text-center mt-[20px] font-bold text-[20px] p-[20px] bg-red-700 text-white rounded-[4px] mb-[20px]">
+            <div className="h-auto text-center">
+              <p>Rasmi</p>
+            </div>
+            <div className="h-auto text-center">
+              <p>Nomi</p>
+            </div>
+            <div className=" h-auto text-center">
+              <p>Narxi</p>
+            </div>
+            <div className=" h-auto text-center">
+              <p>Turi</p>
+            </div>
+          </div>
+          {cards.length === 0
+            ?
+            (
+              <Skeleton
+                count={5}
+                width={"85%"}
+                height={86}
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  margin: "0 auto"
+                }}
+              />
+            )
+            :
+            cards.map((item) => (
+              <Fragment key={item.id}>
+                <details>
+                  <summary className="w-[100%] mx-auto flex justify-between text-center font-bold text-[20px] cursor-pointer">
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                      <img className="w-[86px] h-[86px] object-cover" src={item.img} alt={item.name} />
+                    </div>
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                      <p>{item.name}</p>
+                    </div>
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                      <p>{item.price}</p>
+                    </div>
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                      <p>{item.type}</p>
+                    </div>
+                  </summary>
+                  <div className="w-[85%] mx-auto items-center text-center">
+                    <div className="w-[50%] flex justify-evenly mx-auto">
+                      <button
+                        onClick={() => handleShowModal(item.name, item.price, item.type, item.id)}
+                        className="bg-orange-500 hover:bg-[orange] text-[white] py-[4px] px-[20px] rounded-[6px] text-[18px] font-bold">Tahrirlash</button>
+                      <button
+                        onClick={() => handleDeleteModal(item.id)}
+                        className="bg-red-700 hover:bg-[red] text-[white] py-[4px] px-[20px] rounded-[6px] text-[18px] font-bold">{"O'chirish"}</button>
+                    </div>
+                  </div>
+                </details>
+                <hr className="w-[85%] h-[1px] mx-auto bg-slate-500 my-[20px]" />
+              </Fragment>
+            ))}
+        </div>
+      </div >
       {showModal && (
         <>
-          <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] absolute top-0 left-0 z-50"></div>
-          <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col absolute top-0 left-0 z-50">
+          <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] fixed top-0 left-0 z-50"></div>
+          <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col fixed top-0 left-0 z-50">
             <div className="w-[30%] h-[80vh] bg-[#c00a27] flex justify-around m-auto">
               <form className="w-auto h-[80vh] justify-evenly m-auto flex flex-col">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[38px] font-bold text-[#ffae00]">Yangilash</h2>
-                  <IoClose size={40} onClick={() => setShowModal(!showModal)} className="text-[#ffae00] hover:text-[red] cursor-pointer" />
+                  <IoClose size={40} onClick={() => handleShowModal(inpName, inpPrice, type, docId)} className="text-[#ffae00] hover:text-[red] cursor-pointer" />
                 </div>
                 <div className="w-[300px]">
                   <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="name">Nomi:</label><br />
@@ -216,6 +359,7 @@ const Admin = () => {
                   <label className="w-[100%] text-center cursor-pointer text-[#fff] py-[6px] m-auto font-bold rounded-[6px]" htmlFor="img">Rasmni tanlang</label>
                   <input id="img" className="hidden" type="file" onChange={(e) => handleUpload(e)} />
                 </div>
+
                 <button className="bg-orange-500 hover:bg-[#ffae00] py-[6px] text-[18px] font-semibold rounded-[6px] text-[#fff]" onClick={handleUpdate}>Update</button>
               </form>
             </div>
@@ -224,22 +368,23 @@ const Admin = () => {
       )}
       {deleteModal && (
         <>
-          <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] absolute top-0 left-0 z-50"></div>
-          <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col absolute top-0 left-0 z-50">
+          <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] fixed top-0 left-0 z-50"></div>
+          <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col fixed top-0 left-0 z-50">
             <div className="w-[60%] h-[30vh] bg-[#c00a27] flex flex-col items-center justify-around m-auto">
               <h2 className="text-[30px] text-center text-[#ff0000] font-bold p-[20px]">{"Ushbu menuni o'chiriga ishonchingiz komilmi !"}</h2>
               <div className="w-[40%] flex justify-between">
                 <button
-                  onClick={() => setDeleteModal(!deleteModal)}
-                  className="bg-[yellow] py-[8px] px-[16px] rounded-[8px]">Bekor qilish</button>
+                  onClick={() => handleDeleteModal(docId)}
+                  className="bg-[yellow] py-[4px] px-[16px] text-[18px] font-bold text-[black] rounded-[8px]">Bekor qilish</button>
                 <button
                   onClick={handleDelteDoc}
-                  className="bg-[red] py-[8px] px-[16px] rounded-[8px]">{"O'chirish"}</button>
+                  className="bg-[red] py-[4px] px-[16px] text-[18px] font-bold text-[white] rounded-[8px]">{"O'chirish"}</button>
               </div>
             </div>
           </div>
         </>
       )}
+
     </>
   );
 };

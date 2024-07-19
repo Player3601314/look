@@ -51,6 +51,7 @@ const reducer = (state, action) => {
         lastLoginAt: ""
       }
       localStorage.setItem("user", JSON.stringify(userData))
+      localStorage.removeItem("orderData")
       return {
         currentUser: userData
       };

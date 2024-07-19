@@ -1,11 +1,10 @@
-import React from 'react';
-import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
+import { YMaps, Map, Placemark, FullscreenControl, SearchControl, TypeSelector, ZoomControl } from '@pbe/react-yandex-maps';
 import { FaMinus, FaPlus, FaTrash } from 'react-icons/fa';
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { LiaMoneyBillSolid } from 'react-icons/lia';
 import { BsCreditCard } from 'react-icons/bs';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
 
 const Pay = (props) => {
@@ -19,19 +18,48 @@ const Pay = (props) => {
   const [price, setPrice] = useState(0);
   const [coordinates, setCoordinates] = useState(null);
   const [radio, setRadio] = useState(true)
+  const [order, setOrder] = useState(false)
+  const [orderData, setOrderData] = useState([])
 
-  const cardCollection = collection(firestore, "orders");
-
-  console.log(coordinates);
+  const orderCollection = collection(firestore, "orders");
+  const localOrderJSON = localStorage.getItem("orders")
+  const localOrder = JSON.parse(localOrderJSON)
+  const storageOrder = JSON.parse(localStorage.getItem("order"))
+  const storageCards = JSON.parse(localStorage.getItem("cards"))
+  console.log(localOrder);
 
   useEffect(() => {
     let totalPrice = 0;
-    const localData = JSON.parse(localStorage.getItem('cards')) || [];
-    localData.forEach((item) => {
-      totalPrice += item.price;
-    });
-    setPrice(totalPrice);
-  }, []);
+    const localDataString = localStorage.getItem('cards');
+
+    if (storageOrder) {
+      setOrder(storageOrder.order)
+    }
+
+    onSnapshot(orderCollection, (snapShot) => {
+      let data = [];
+      snapShot.docs.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id });
+      });
+      setOrderData(data);
+    })
+
+    try {
+      const localData = JSON.parse(localDataString) || [];
+
+      if (Array.isArray(localData)) {
+        localData.forEach((item) => {
+          totalPrice += item.price || 0;
+        });
+
+        setPrice(totalPrice);
+      } else {
+        console.error('Data retrieved from localStorage is not an array:', localData);
+      }
+    } catch (error) {
+      console.error('Error parsing JSON from localStorage:', error);
+    }
+  }, [storageData]);
 
   const handleRemove = (data, id) => {
     const filterData = data.filter((item) => item.id !== id);
@@ -40,10 +68,9 @@ const Pay = (props) => {
       localStorage.setItem('cards', JSON.stringify(filterData));
     }
     else if (storageData.length === 0) {
-      localStorage.clear()
+      localStorage.removeItem("cards")
       setStorageData(null)
       localStorage.setItem('cards', JSON.stringify([]));
-      console.log("...");
     }
   };
 
@@ -90,39 +117,6 @@ const Pay = (props) => {
     setCoordinates(coords);
   };
 
-  const handleOrder = async (e) => {
-    e.preventDefault();
-    const numLength = num.length
-    // const coordData = [40.120302, 67.828544]
-    if (name === "" || numLength !== 11 || storageData.length === 0 || coordinates === null || note === "") {
-      alert("Iltimos o'zingiz yoki buyurtmangiz haqidagi ma'lumotlarni qaytadan tekshirib chiqing")
-      return
-    }
-    try {
-
-      let firstData = {};
-      storageData.forEach((item, index) => {
-        firstData[index.toString()] = item;
-      });
-
-      let secondData = {
-        userName: name,
-        phoneNum: num,
-        coordinates: coordinates,
-        radio: radio ? "naqd" : "terminal"
-      }
-
-      Object.assign(secondData, firstData)
-
-      await addDoc(cardCollection, secondData);
-      window.location.reload();
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
-  };
-
-  console.log(storageData);
-
   const handleChangeNum = (e) => {
     const num = e.target.value
     const numLength = num.length
@@ -131,162 +125,379 @@ const Pay = (props) => {
     }
 
     setNum(num)
+  };
+
+  const handleOrder = async (e) => {
+    e.preventDefault();
+
+    const numLength = num.length;
+    if (name === "" || numLength !== 11 || storageData.length === 0 || coordinates === null || note === "") {
+      alert("Iltimos o'zingiz yoki buyurtmangiz haqidagi ma'lumotlarni qaytadan tekshirib chiqing");
+      return;
+    }
+
+    const storageArr = [];
+    if (confirm("Barcha malumotlaringiz va xaridlaringiz to'g'riligiga ishonchingiz komilmi") === true) {
+      try {
+        if (localOrder) {
+          storageArr.push(localOrder);
+        }
+
+        console.log("Radio value:", radio);
+
+        let firstData = storageCards.map((item) => ({
+          name: item.name,
+          img: item.img,
+          price: item.price,
+          softPrice: item.softPrice,
+          piece: item.piece,
+          type: item.type
+        }))
+
+        let secondData = {
+          userName: name,
+          phoneNum: num,
+          coordinates: coordinates,
+          note: note,
+          totalPrice: price,
+          orderType: "default",
+          radio: radio ? "naqd" : "terminal"
+        };
+
+        let orderOBJ = {
+          order: true,
+          phone: num,
+          name: name,
+        }
+
+        Object.assign(secondData, firstData)
+
+        const hasUndefinedFields = Object.values(secondData).some(value => value === undefined);
+        if (hasUndefinedFields) {
+          console.error("secondData contains undefined values:", secondData);
+          return;
+        }
+
+        await addDoc(orderCollection, secondData);
+        localStorage.setItem("orders", JSON.stringify(secondData))
+        localStorage.setItem("order", JSON.stringify(orderOBJ))
+        setOrder(true);
+      }
+      catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    }
+  };
+
+  const handleCancel = async (id) => {
+    if (confirm("Buyurtmangizni bekor qilmoqchimisiz ?") === true) {
+      localStorage.removeItem("order")
+      localStorage.removeItem("orders")
+      await deleteDoc(doc(firestore, "orders", id))
+      setOrder(false)
+    }
+    else {
+      setOrder(true)
+    }
   }
 
+  const handleDone = async (id) => {
+    localStorage.removeItem("order")
+    localStorage.removeItem("orders")
+    // await deleteDoc(doc(firestore, "orders", id))
+    console.log(id);
+    setOrder(false)
+  }
 
   return (
     <div className="w-[94%] mx-auto pt-[100px] flex justify-between">
-      <div className="w-[70%]">
-        <div>
-          <h2 className="text-[40px] font-bold">Buyurtmani tasdiqlash</h2>
-        </div>
-        <form className="flex flex-col bg-[#fff] rounded-[6px] p-[30px] mt-[50px]">
-          <h2 className="text-[40px] font-bold">{"Shaxsiy ma'lumotlar"}</h2>
-          <div className="flex justify-between mt-[20px]">
-            <input
-              className="w-[45%] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
-              type="text"
-              placeholder="Ism familyangiz"
-              onChange={(e) => setName(e.target.value)}
-              value={name}
-            />
-            <input
-              className="hide-input-controls w-[45%] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
-              type="number"
-              placeholder="+998 ** *** ** **"
-              onChange={(e) => handleChangeNum(e)}
-              value={num}
-            />
-          </div>
-        </form>
-        <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
-          <h2 className="text-[40px] font-bold">Buyurtmalaringiz</h2>
-          <div>
-            {storageData.map((item) => (
-              <div key={item.id} className="w-[100%] flex flex-row justify-between items-center my-[20px]">
-                <div className="w-[50%] flex items-center">
-                  <button className="mr-[20px]">
-                    <FaTrash
-                      onClick={() => handleRemove(storageData, item.id)}
-                      size={20}
-                      color="#323232"
-                      className="text-[#c00a27]"
-                    />
-                  </button>
-                  <div className="w-[50%] flex items-center justify-between">
-                    <img className="w-[100px] h-[95px]" src={item.img} alt="" />
-                    <p className="text-[16px] w-[100px] text-center font-thin">{item.name}</p>
-                  </div>
-                </div>
-                <div className="w-[16%] items-center text-center">
-                  <p className="text-[#c00a27]">
-                    {item.price} {t('price.value')}
-                  </p>
-                  <div className="w-[100%] h-[40px] flex justify-between items-center bg-[#f6f8f9] rounded-full">
-                    <FaMinus
-                      onClick={() => handleRemovePrice(item)}
-                      className="hover:text-[#ffae00] duration-200 cursor-pointer m-auto"
-                      size={16}
-                    />
-                    <p>{item.piece}</p>
-                    <FaPlus
-                      onClick={() => handleAddPrice(item)}
-                      className="hover:text-[#ffae00] duration-200 cursor-pointer m-auto"
-                      size={16}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
-          <h2 className="text-[40px] font-bold">Buyurtmani yetkaizb berish</h2>
-          <h4 className='text-[20px] font-medium p-[20px] bg-[#f6f8f9] text-[#6e7c87] rounded-[6px] my-[20px]'>Iltimos yetkazib berish uchun manzilingizni tanlang</h4>
-          <YMaps query={{ lang: 'uz_UZ' }}>
+      <div className={order ? "w-[100%]" : "w-[70%]"}>
+        {!order && (
+          <>
             <div>
-              <Map
-                defaultState={{ center: [40.120302, 67.828544], zoom: 12 }}
-                width="100%"
-                height="400px"
-                onClick={handleMapClick}
-              >
-                <Placemark
-                  geometry={coordinates}
-                  options={{ iconColor: '#ff0000' }}
-                />
-              </Map>
+              <h2 className="text-[40px] font-bold">Buyurtmani tasdiqlash</h2>
             </div>
-          </YMaps>
-        </div>
-
-        <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
-          <h2 className='text-[40px] font-bold'>Elsatma</h2>
-          <textarea
-            className='w-[100%] bg-[#f6f8f9] text-[18px] font-medium resize-none rounded-[6px] p-[12px]'
-            placeholder='Buyurtma uchun eslatma qoldiring'
-            onChange={(e) => setNote(e.target.value)}
-          >
-          </textarea>
-        </div>
-
-        <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
-          <h2 className='text-[40px] font-bold'>{"To'lov turi"}</h2>
-          <div className='flex justify-between'>
-            <label htmlFor='naqd' onClick={() => setRadio(true)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#FFF7E5]" : "bg-[#f6f8f9]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center`}>
-              <div className='flex items-center'>
-                <div className='w-[40px] h-[40px] bg-[#eef0f2] items-center flex rounded-full'>
-                  <LiaMoneyBillSolid className='mx-auto text-[#ffae00]' />
-                </div>
-                <h4 className='text-[20px] font-medium ml-[10px]'>Naqd</h4>
+            <form className="flex flex-col bg-[#fff] rounded-[6px] p-[30px] mt-[50px]">
+              <h2 className="text-[40px] font-bold">{"Shaxsiy ma'lumotlar"}</h2>
+              <div className="flex justify-between mt-[20px]">
+                <input
+                  className="w-[45%] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
+                  type="text"
+                  placeholder="Ism familyangiz"
+                  onChange={(e) => setName(e.target.value)}
+                  value={name}
+                />
+                <input
+                  className="hide-input-controls w-[45%] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
+                  type="number"
+                  onWheel={(e) => e.target.blur()}
+                  placeholder="+998 ** *** ** **"
+                  onChange={(e) => handleChangeNum(e)}
+                  value={num}
+                />
               </div>
-              <input id='naqd' type="radio" value="naqd" checked={radio} onChange={() => { }} name="paymentMethod" className='hidden' />
-            </label>
-
-            <label htmlFor='terminal' onClick={() => setRadio(false)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#f6f8f9]" : "bg-[#FFF7E5]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center`}>
-              <div className='flex items-center'>
-                <div className='w-[40px] h-[40px] bg-[#eef0f2] items-center flex rounded-full'>
-                  <BsCreditCard className='mx-auto text-[#ffae00]' />
+            </form>
+          </>
+        )}
+        {!order &&
+          <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
+            <h2 className="text-[40px] font-bold">Buyurtmalaringiz</h2>
+            <div>
+              {storageData.map((item) => (
+                <div key={item.id} className="w-[100%] flex flex-row justify-between items-center my-[20px]">
+                  <div className="w-[50%] flex items-center">
+                    <button className="mr-[20px]">
+                      <FaTrash
+                        onClick={() => handleRemove(storageData, item.id)}
+                        size={20}
+                        color="#323232"
+                        className="text-[#c00a27]"
+                      />
+                    </button>
+                    <div className="w-[50%] flex items-center justify-between">
+                      <img className="w-[100px] h-[95px] object-cover" src={item.img} alt="" />
+                      <p className="text-[16px] w-[100px] text-center font-thin">{item.name}</p>
+                    </div>
+                  </div>
+                  <div className="w-[16%] items-center text-center">
+                    <p className="text-[#c00a27]">
+                      {item.price} {t('price.value')}
+                    </p>
+                    <div className="w-[100%] h-[40px] flex justify-between items-center bg-[#f6f8f9] rounded-full">
+                      <FaMinus
+                        onClick={() => handleRemovePrice(item)}
+                        className="hover:text-[#ffae00] duration-200 cursor-pointer m-auto"
+                        size={16}
+                      />
+                      <p>{item.piece}</p>
+                      <FaPlus
+                        onClick={() => handleAddPrice(item)}
+                        className="hover:text-[#ffae00] duration-200 cursor-pointer m-auto"
+                        size={16}
+                      />
+                    </div>
+                  </div>
                 </div>
-                <h4 className='text-[20px] font-medium ml-[10px]'>Terminal</h4>
-              </div>
-              <input id='terminal' type="radio" value="terminal" checked={!radio} onChange={() => { }} name="paymentMethod" className='hidden' />
-            </label>
-
+              ))}
+            </div>
           </div>
-        </div>
+        }
+        {order && (
+          orderData.length > 0 ? (
+            (() => {
+              const filteredOrders = orderData.filter(item =>
+                item.userName === localOrder.userName &&
+                item.phoneNum === localOrder.phoneNum &&
+                item.orderType !== "default"
+              );
+
+              if (filteredOrders.length > 0) {
+                return filteredOrders.map((order) => (
+                  <Fragment key={order.id}>
+                    <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
+                      <h2 className="text-[40px] font-bold">Buyurtmalaringiz</h2>
+                      <div className="bg-[#fff] rounded-[6px] items-center flex justify-between">
+                        <YMaps query={{ lang: 'uz_UZ' }}>
+                          <div>
+                            <Map
+                              defaultState={{
+                                center: order.coordinates,
+                                zoom: 12,
+                              }}
+                              modules={["control.ZoomControl", "control.FullscreenControl"]}
+                              width="350px"
+                              height="350px"
+                            >
+                              <Placemark
+                                geometry={order.coordinates}
+                                options={{ iconColor: '#ff0000' }}
+                              />
+                            </Map>
+                          </div>
+                        </YMaps>
+                        <div className="w-[20%]">
+                          <h2>Eslatma: </h2>
+                          <p className="w-[100%] h-auto">{order.note}</p>
+                        </div>
+                        <div className="w-[40%] flex flex-col text-left pr-[40px]">
+                          <div className="text-[40px] font-medium text-left flex">
+                            <h2>Telfon: </h2>
+                            <h2 className="pl-[10px] text-[red] font-bold">{"+"}{order.phoneNum}</h2>
+                          </div>
+                          <div className="text-[40px] font-medium text-left flex flex-wrap">
+                            <h2>Umumiy narxi: </h2>
+                            <h2 className="pl-[10px] text-[red] font-bold">{order.totalPrice} {"so'm"}</h2>
+                          </div>
+                          <div className="text-[40px] font-medium text-left flex">
+                            <h2>{"To'lov turi: "} </h2>
+                            <h2 className="pl-[10px] text-[red] font-bold">{order.radio}</h2>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-center my-[20px] flex flex-col">
+                        {order.orderType !== "done" && (
+                          <button
+                            onClick={() => handleCancel(order.id)}
+                            className='w-[300px] mx-auto my-[6px] py-[8px] px-[10px] rounded-[4px] text-[20px] font-bold bg-red-600 hover:bg-[red] text-white'>Buyurtmani bekor qilish</button>
+                        )}
+                        {order.orderType === "done" && (
+                          <button
+                            onClick={() => handleDone(order.id)}
+                            className='w-[300px] mx-auto my-[6px] py-[8px] px-[10px] rounded-[4px] text-[20px] font-bold bg-green-600 hover:bg-[green] text-white'>Buyurtmani oldim</button>
+                        )}
+                        <h2 className="text-[40px] text-center font-medium inline-block">Maxsulotlaringiz:</h2>
+                      </div>
+                      {Object.values(order).map((item, itemIndex) => (
+                        item && typeof item === 'object' && (
+                          <Fragment key={itemIndex}>
+                            <div className="w-[100%] h-auto p-[20px] bg-[#fff] flex justify-between">
+                              {item.img && (
+                                <>
+                                  <div className="flex items-center">
+                                    <img
+                                      className="w-[100px] h-[100px] object-cover"
+                                      src={item.img}
+                                      alt={item.name}
+                                    />
+                                    <div className="ml-[40px] flex flex-col justify-around text-[34px]">
+                                      <div className="flex">
+                                        <h4 className="inline-block">Mahsulot nomi: </h4>
+                                        <h4 className="text-[red] pl-[10px] font-bold">{item.name}</h4>
+                                      </div>
+                                      <div className="flex">
+                                        <h4 className="inline-block">Mahsulot soni: </h4>
+                                        <h4 className="text-[red] pl-[10px] font-bold">{item.piece}</h4>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col justify-around text-right items-end text-[34px]">
+                                    <div className="flex">
+                                      <h4 className="inline-block">Mahsulot narxi: </h4>
+                                      <h4 className="text-[red] pl-[10px] font-bold">{item.price}</h4>
+                                    </div>
+                                    <div className="flex">
+                                      <h4 className="inline-block">Mahsulot turi: </h4>
+                                      <h4 className="text-[red] pl-[10px] font-bold">{item.type}</h4>
+                                    </div>
+                                  </div>
+                                </>
+                              )}
+                            </div>
+                          </Fragment>
+                        )
+                      ))}
+                    </div>
+                  </Fragment>
+                ));
+              } else {
+                return <>Iltimos kutib turing sizning buyurtmangiz kurib chiqilmoqda</>;
+              }
+            })()
+          ) : (
+            <div>Yuklanmoqda</div>
+          )
+        )}
+
+        {!order && (
+          <>
+            <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
+              <h2 className="text-[40px] font-bold">Buyurtmani yetkaizb berish</h2>
+              <h4 className='text-[20px] font-medium p-[20px] bg-[#f6f8f9] text-[#6e7c87] rounded-[6px] my-[20px]'>Iltimos yetkazib berish uchun manzilingizni tanlang</h4>
+              <YMaps query={{ lang: 'uz_UZ' }}>
+                <div>
+                  <Map
+                    defaultState={{
+                      center: [40.120302, 67.828544],
+                      zoom: 12,
+                      controls: [],
+                    }}
+                    width="100%"
+                    height="400px"
+                    onClick={handleMapClick}
+                  >
+                    <SearchControl />
+                    <FullscreenControl />
+                    <ZoomControl options={{ float: "right" }} />
+                    <TypeSelector options={{ float: "right" }} />
+                    <Placemark
+                      geometry={coordinates}
+                      options={{ iconColor: '#ff0000' }}
+                    />
+                  </Map>
+                </div>
+              </YMaps>
+            </div>
+
+            <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
+              <h2 className='text-[40px] font-bold'>Elsatma</h2>
+              <textarea
+                className='w-[100%] bg-[#f6f8f9] text-[18px] font-medium resize-none rounded-[6px] p-[12px]'
+                placeholder='Buyurtma uchun eslatma qoldiring'
+                onChange={(e) => setNote(e.target.value)}
+              >
+              </textarea>
+            </div>
+
+            <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
+              <h2 className='text-[40px] font-bold'>{"To'lov turi"}</h2>
+              <div className='flex justify-between'>
+                <label htmlFor='naqd' onClick={() => setRadio(true)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#FFF7E5]" : "bg-[#f6f8f9]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center`}>
+                  <div className='flex items-center'>
+                    <div className='w-[40px] h-[40px] bg-[#eef0f2] items-center flex rounded-full'>
+                      <LiaMoneyBillSolid className='mx-auto text-[#ffae00]' />
+                    </div>
+                    <h4 className='text-[20px] font-medium ml-[10px]'>Naqd</h4>
+                  </div>
+                  <input id='naqd' type="radio" value="naqd" checked={radio} onChange={() => { }} name="paymentMethod" className='hidden' />
+                </label>
+
+                <label htmlFor='terminal' onClick={() => setRadio(false)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#f6f8f9]" : "bg-[#FFF7E5]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center`}>
+                  <div className='flex items-center'>
+                    <div className='w-[40px] h-[40px] bg-[#eef0f2] items-center flex rounded-full'>
+                      <BsCreditCard className='mx-auto text-[#ffae00]' />
+                    </div>
+                    <h4 className='text-[20px] font-medium ml-[10px]'>Terminal</h4>
+                  </div>
+                  <input id='terminal' type="radio" value="terminal" checked={!radio} onChange={() => { }} name="paymentMethod" className='hidden' />
+                </label>
+
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
-      <div className="w-[28%] h-[360px] bg-[#fff] mt-[80px] sticky top-[0px] rounded-[4px] py-[20px] px-[20px]">
-        <h2 className="text-[40px] font-bold">Jami</h2>
-        <div className="flex mt-[20px] justify-between">
-          <div>
-            <p className="text-[18px] font-medium text-[#6e7c87]">Buyurtma narxi:</p>
-            <p className="text-[18px] font-medium text-[#6e7c87]">Yetkazib berish narxi:</p>
-            <p className="text-[18px] font-medium text-[#6e7c87]">Yetkazib berish vaqti:</p>
+      {!order && (
+        <div className="w-[28%] h-[360px] bg-[#fff] mt-[80px] sticky top-[0px] rounded-[4px] py-[20px] px-[20px]">
+          <h2 className="text-[40px] font-bold">Jami</h2>
+          <div className="flex mt-[20px] justify-between">
+            <div>
+              <p className="text-[18px] font-medium text-[#6e7c87]">Buyurtma narxi:</p>
+              <p className="text-[18px] font-medium text-[#6e7c87]">Yetkazib berish narxi:</p>
+              <p className="text-[18px] font-medium text-[#6e7c87]">Yetkazib berish vaqti:</p>
+            </div>
+            <div>
+              <p className="text-[18px] font-medium">{price} {t('price.value')}</p>
+              <p className="text-[18px] font-medium">None</p>
+              <p className="text-[18px] font-medium">40 daqiqa</p>
+            </div>
           </div>
-          <div>
-            <p className="text-[18px] font-medium">{price} {t('price.value')}</p>
-            <p className="text-[18px] font-medium">None</p>
-            <p className="text-[18px] font-medium">40 daqiqa</p>
+          <hr className="w-[100%] h-[1px] my-[20px] bg-[#b9b9b9b9]" />
+          <div className="h-[auto] flex flex-col">
+            <div className="flex justify-between">
+              <h4 className="text-[20px] font-medium text-[#000]">Umumiy narxi</h4>
+              <h4 className="text-[20px] font-medium text-red-600">
+                {price} {t('price.value')}
+              </h4>
+            </div>
+            <button
+              onClick={handleOrder}
+              className="w-[100%] py-[15px] mt-[20px] bg-red-700 text-[#fff] text-[18px] font-bold rounded-[6px]">
+              Tasdiqlash
+            </button>
           </div>
         </div>
-        <hr className="w-[100%] h-[1px] my-[20px] bg-[#b9b9b9b9]" />
-        <div className="h-[auto] flex flex-col">
-          <div className="flex justify-between">
-            <h4 className="text-[20px] font-medium text-[#000]">Umumiy narxi</h4>
-            <h4 className="text-[20px] font-medium text-red-600">
-              {price} {t('price.value')}
-            </h4>
-          </div>
-          <button
-            onClick={handleOrder}
-            className="w-[100%] py-[15px] mt-[20px] bg-red-700 text-[#fff] text-[18px] font-bold rounded-[6px]">
-            Tasdiqlash
-          </button>
-        </div>
-      </div>
+      )}
     </div>
   );
 };
