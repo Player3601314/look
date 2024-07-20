@@ -74,4 +74,15 @@
     margin: 0px;
     margin-top: 8px;
   }
+
+  .navlinks:hover::after {
+    content: "";
+    display: block;
+    height: 2px;
+    border-radius: 2px;
+    background-color: #ffae00;
+    margin: 0px;
+    margin-top: 8px;
+    animation: mymove 0.4s forwards;
+  }
 }

@@ -6,6 +6,7 @@ import { LiaMoneyBillSolid } from 'react-icons/lia';
 import { BsCreditCard } from 'react-icons/bs';
 import { addDoc, collection, deleteDoc, doc, onSnapshot } from 'firebase/firestore';
 import { firestore } from '../firebase/firebase';
+import Skeleton from 'react-loading-skeleton';
 
 const Pay = (props) => {
   const [t, i18n] = useTranslation('global');
@@ -195,6 +196,7 @@ const Pay = (props) => {
       localStorage.removeItem("orders")
       await deleteDoc(doc(firestore, "orders", id))
       setOrder(false)
+      window.location.reload()
     }
     else {
       setOrder(true)
@@ -204,14 +206,13 @@ const Pay = (props) => {
   const handleDone = async (id) => {
     localStorage.removeItem("order")
     localStorage.removeItem("orders")
-    // await deleteDoc(doc(firestore, "orders", id))
     console.log(id);
     setOrder(false)
   }
 
   return (
-    <div className="w-[94%] mx-auto pt-[100px] flex justify-between">
-      <div className={order ? "w-[100%]" : "w-[70%]"}>
+    <div className="w-[94%] mx-auto pt-[100px] flex justify-between sm:flex-col md:flex-col lg:flex-col">
+      <div className={order ? "w-[100%]" : "w-[70%] sm:w-[100%] md:w-[85%] md:mx-auto lg:w-[85%] lg:mx-auto"}>
         {!order && (
           <>
             <div>
@@ -219,16 +220,16 @@ const Pay = (props) => {
             </div>
             <form className="flex flex-col bg-[#fff] rounded-[6px] p-[30px] mt-[50px]">
               <h2 className="text-[40px] font-bold">{"Shaxsiy ma'lumotlar"}</h2>
-              <div className="flex justify-between mt-[20px]">
+              <div className="flex justify-between mt-[20px] sm:flex-col sm:w-[100%]">
                 <input
-                  className="w-[45%] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
+                  className="w-[45%] sm:w-[100%] my-[10px] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
                   type="text"
                   placeholder="Ism familyangiz"
                   onChange={(e) => setName(e.target.value)}
                   value={name}
                 />
                 <input
-                  className="hide-input-controls w-[45%] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
+                  className="hide-input-controls w-[45%] sm:w-[100%] my-[10px] bg-[#f6f8f9] text-[18px] font-medium py-[10px] px-[14px]"
                   type="number"
                   onWheel={(e) => e.target.blur()}
                   placeholder="+998 ** *** ** **"
@@ -240,12 +241,12 @@ const Pay = (props) => {
           </>
         )}
         {!order &&
-          <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
+          <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px] sm:px-[20px]">
             <h2 className="text-[40px] font-bold">Buyurtmalaringiz</h2>
             <div>
               {storageData.map((item) => (
                 <div key={item.id} className="w-[100%] flex flex-row justify-between items-center my-[20px]">
-                  <div className="w-[50%] flex items-center">
+                  <div className="w-[50%] flex items-center sm:w-[70%] md:w-[70%] lg:w-[60%]">
                     <button className="mr-[20px]">
                       <FaTrash
                         onClick={() => handleRemove(storageData, item.id)}
@@ -254,12 +255,12 @@ const Pay = (props) => {
                         className="text-[#c00a27]"
                       />
                     </button>
-                    <div className="w-[50%] flex items-center justify-between">
+                    <div className="w-[50%] flex items-center justify-between sm:w-[60%] lg:w-[60%]">
                       <img className="w-[100px] h-[95px] object-cover" src={item.img} alt="" />
                       <p className="text-[16px] w-[100px] text-center font-thin">{item.name}</p>
                     </div>
                   </div>
-                  <div className="w-[16%] items-center text-center">
+                  <div className="w-[16%] items-center text-center sm:w-[30%] md:w-[25%] lg:w-[20%]">
                     <p className="text-[#c00a27]">
                       {item.price} {t('price.value')}
                     </p>
@@ -295,8 +296,8 @@ const Pay = (props) => {
                 return filteredOrders.map((order) => (
                   <Fragment key={order.id}>
                     <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
-                      <h2 className="text-[40px] font-bold">Buyurtmalaringiz</h2>
-                      <div className="bg-[#fff] rounded-[6px] items-center flex justify-between">
+                      <h2 className="text-[40px] font-bold sm:text-center md:text-center lg:text-center">Buyurtmalaringiz</h2>
+                      <div className="bg-[#fff] rounded-[6px] items-center flex justify-between sm:flex-col md:flex-col lg:flex-col">
                         <YMaps query={{ lang: 'uz_UZ' }}>
                           <div>
                             <Map
@@ -315,12 +316,12 @@ const Pay = (props) => {
                             </Map>
                           </div>
                         </YMaps>
-                        <div className="w-[20%]">
-                          <h2>Eslatma: </h2>
-                          <p className="w-[100%] h-auto">{order.note}</p>
-                        </div>
-                        <div className="w-[40%] flex flex-col text-left pr-[40px]">
-                          <div className="text-[40px] font-medium text-left flex">
+                        <div className="w-[40%] flex flex-col text-left pr-[40px] sm:w-auto sm:p-0 md:w-auto md:p-0 lg:w-auto lg:p-0 sm:my-[20px] md:my-[20px]">
+                          <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
+                            <h2>Ismingiz: </h2>
+                            <h2 className="pl-[10px] text-[red] font-bold">{order.userName}</h2>
+                          </div>
+                          <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
                             <h2>Telfon: </h2>
                             <h2 className="pl-[10px] text-[red] font-bold">{"+"}{order.phoneNum}</h2>
                           </div>
@@ -328,11 +329,15 @@ const Pay = (props) => {
                             <h2>Umumiy narxi: </h2>
                             <h2 className="pl-[10px] text-[red] font-bold">{order.totalPrice} {"so'm"}</h2>
                           </div>
-                          <div className="text-[40px] font-medium text-left flex">
+                          <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
                             <h2>{"To'lov turi: "} </h2>
                             <h2 className="pl-[10px] text-[red] font-bold">{order.radio}</h2>
                           </div>
                         </div>
+                      </div>
+                      <div className="w-[100%] mx-auto text-center flex flex-col items-center text-[red]">
+                        <h2 className='text-[black] text-[40px]'>Eslatma: </h2>
+                        <textarea disabled className="w-[40%] sm:w-[80%] md:w-[60%] p-[20px] max-h-[150px] rounded-[4px] font-bold">{order.note}</textarea>
                       </div>
                       <div className="text-center my-[20px] flex flex-col">
                         {order.orderType !== "done" && (
@@ -350,7 +355,7 @@ const Pay = (props) => {
                       {Object.values(order).map((item, itemIndex) => (
                         item && typeof item === 'object' && (
                           <Fragment key={itemIndex}>
-                            <div className="w-[100%] h-auto p-[20px] bg-[#fff] flex justify-between">
+                            <div className="w-[100%] h-auto p-[20px] bg-[#fff] flex justify-between sm:hidden md:hidden">
                               {item.img && (
                                 <>
                                   <div className="flex items-center">
@@ -383,6 +388,31 @@ const Pay = (props) => {
                                 </>
                               )}
                             </div>
+                            {item.img && (
+                              <div
+                                className="w-[100%] h-[350px] bg-[#fff] sm:w-[350px] sm:mx-auto rounded-[10px] p-[16px] hidden sm:flex md:w-[50%] md:flex md:mx-auto flex-col text-[red] font-bold"
+                                key={item.name}
+                              >
+                                <img src={item.img} className="w-[150px] h-auto sm:w-[80%] mx-auto object-cover md:w-[100%]" alt="" />
+                                <div className="sm:w-[80%] sm:mx-auto md:w-[70%] md:mx-auto md:text-center md:justify-between mt-[20px] flex text-[20px]">
+                                  <p className='text-[black] mr-[4px] font-medium'>Nomi: </p>
+                                  {item.name}
+                                </div>
+                                <div className="sm:w-[80%] sm:mx-auto md:w-[70%] md:mx-auto md:text-center md:justify-between mt-[0px] flex text-[20px]">
+                                  <p className='text-[black] mr-[4px] font-medium'>Narxi:</p>
+                                  {item.softPrice}
+                                  {t("price.value")}
+                                </div>
+                                <div className="sm:w-[80%] sm:mx-auto md:w-[70%] md:mx-auto md:text-center md:justify-between mt-[0px] flex text-[20px]">
+                                  <p className='text-[black] mr-[4px] font-medium'>Soni: </p>
+                                  {item.piece}
+                                </div>
+                                <div className="sm:w-[80%] sm:mx-auto md:w-[70%] md:mx-auto md:text-center md:justify-between mt-[0px] flex text-[20px]">
+                                  <p className='text-[black] mr-[4px] font-medium'>Turi: </p>
+                                  {item.type}
+                                </div>
+                              </div>
+                            )}
                           </Fragment>
                         )
                       ))}
@@ -390,11 +420,18 @@ const Pay = (props) => {
                   </Fragment>
                 ));
               } else {
-                return <>Iltimos kutib turing sizning buyurtmangiz kurib chiqilmoqda</>;
+                return <>
+                  <Skeleton width={"100%"} height={"100vh"} />
+                  <div className="w-[100%] absolute top-[60px] left-0 flex justify-center items-center h-screen">
+                    <div className="bg-gray-200 p-4 rounded-lg shadow-md">
+                      <p>{"Sizning buyurtmangiz kurib chiqilmoqda. Iltimos kutib turing!"}</p>
+                    </div>
+                  </div>
+                </>;
               }
             })()
           ) : (
-            <div>Yuklanmoqda</div>
+            <div><Skeleton width={"100%"} height={"100vh"} /></div>
           )
         )}
 
@@ -440,8 +477,8 @@ const Pay = (props) => {
 
             <div className="my-[20px] bg-[#fff] p-[30px] rounded-[6px]">
               <h2 className='text-[40px] font-bold'>{"To'lov turi"}</h2>
-              <div className='flex justify-between'>
-                <label htmlFor='naqd' onClick={() => setRadio(true)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#FFF7E5]" : "bg-[#f6f8f9]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center`}>
+              <div className='flex justify-between sm:flex-col'>
+                <label htmlFor='naqd' onClick={() => setRadio(true)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#FFF7E5]" : "bg-[#f6f8f9]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center sm:w-[100%] my-[10px]`}>
                   <div className='flex items-center'>
                     <div className='w-[40px] h-[40px] bg-[#eef0f2] items-center flex rounded-full'>
                       <LiaMoneyBillSolid className='mx-auto text-[#ffae00]' />
@@ -451,7 +488,7 @@ const Pay = (props) => {
                   <input id='naqd' type="radio" value="naqd" checked={radio} onChange={() => { }} name="paymentMethod" className='hidden' />
                 </label>
 
-                <label htmlFor='terminal' onClick={() => setRadio(false)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#f6f8f9]" : "bg-[#FFF7E5]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center`}>
+                <label htmlFor='terminal' onClick={() => setRadio(false)} className={`w-[48%] cursor-pointer ${radio ? "bg-[#f6f8f9]" : "bg-[#FFF7E5]"} py-[14px] px-[14px] rounded-[6px] flex justify-between items-center sm:w-[100%] my-[10px]`}>
                   <div className='flex items-center'>
                     <div className='w-[40px] h-[40px] bg-[#eef0f2] items-center flex rounded-full'>
                       <BsCreditCard className='mx-auto text-[#ffae00]' />
@@ -468,7 +505,7 @@ const Pay = (props) => {
       </div>
 
       {!order && (
-        <div className="w-[28%] h-[360px] bg-[#fff] mt-[80px] sticky top-[0px] rounded-[4px] py-[20px] px-[20px]">
+        <div className="w-[28%] h-[360px] bg-[#fff] mt-[80px] sticky top-[0px] rounded-[4px] py-[20px] px-[20px] sm:w-[100%] md:w-[85%] md:mx-auto lg:w-[85%] lg:mx-auto lg:h-auto">
           <h2 className="text-[40px] font-bold">Jami</h2>
           <div className="flex mt-[20px] justify-between">
             <div>

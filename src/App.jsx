@@ -10,6 +10,8 @@ import Pay from "./pages/Pay"
 import { AuthContext } from "./context/AuthContext"
 import NavNavigate from "./components/NavNavigate/NavNavigate"
 import Order from "./admin/Order/Order"
+import Addres from "./pages/Addres"
+import Contact from "./pages/Contact"
 
 function App() {
 
@@ -31,6 +33,19 @@ function App() {
             <Footer />
           </Nav>
         } />
+
+        <Route path="/address" element={
+          <Nav storageData={storageData} setStorageData={setStorageData}>
+            <Addres />
+          </Nav>
+        } />
+
+        <Route path="/contact" element={
+          <Nav storageData={storageData} setStorageData={setStorageData}>
+            <Contact />
+          </Nav>
+        } />
+
         <Route path="pay" element={
           <Nav storageData={storageData} setStorageData={setStorageData}>
             <Pay storageData={storageData} setStorageData={setStorageData} />

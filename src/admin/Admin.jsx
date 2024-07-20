@@ -8,12 +8,13 @@ import { AuthContext } from "../context/AuthContext";
 import Skeleton from "react-loading-skeleton";
 import 'react-loading-skeleton/dist/skeleton.css'
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoMenu } from "react-icons/io5";
 
 const Admin = () => {
   const [cards, setCards] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false)
+  const [sidebar, setSidebar] = useState(false)
   const [inpName, setInpName] = useState("");
   const [inpPrice, setInpPrice] = useState("");
   const [inpImg, setInpImg] = useState("");
@@ -152,10 +153,30 @@ const Admin = () => {
     dispatch({ type: "LOGOUT", payload: data })
   }
 
+  const handleSidebar = () => {
+    let root = document.getElementsByTagName("html")[0]
+    root.style.overflowY = sidebar ? "auto" : "hidden"
+
+    setSidebar(!sidebar)
+  }
+
   return (
     <>
-      <div className="w-[100%] h-[100vh] flex justify-between">
-        <div className="w-[25%] h-[100vh] fixed top-0 left-0 bg-[#c00a27] flex flex-col justify-between py-[40px] px-[20px] text-center items-center">
+      <div className="w-[100%] h-[100vh] flex justify-between sm:flex-col">
+
+        <div className="w-[100%] h-[80px] fixed top-0 left-0 items-center hidden sm:flex md:flex p-[20px] md:px-[60px] justify-between bg-[#c00a27] z-10">
+          <div className="w-[150px] h-[60px]">
+            <img className="w-[100%] h-[100%]" src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
+          </div>
+          <div>
+            <IoMenu
+              onClick={handleSidebar}
+              size={30}
+              color="#fff" />
+          </div>
+        </div>
+
+        <div className="w-[25%] h-[100vh] lg:w-[30%] fixed top-0 left-0 bg-[#c00a27] flex flex-col justify-between py-[40px] px-[20px] text-center items-center sm:hidden md:hidden">
           <Link to={"/"} className="w-[200px] h-[60px] mx-auto">
             <img src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
           </Link>
@@ -219,8 +240,8 @@ const Admin = () => {
             <button className="text-[30px]">Chiqish</button>
           </div>
         </div>
-        <div className="w-[75%] ml-auto">
-          <div className="w-[85%] mx-auto flex justify-between text-center mt-[20px] font-bold text-[20px] p-[20px] bg-red-700 text-white rounded-[4px] mb-[20px]">
+        <div className="w-[75%] lg:w-[70%] sm:w-[100%] md:w-[80%] ml-auto sm:mx-auto sm:mt-[90px] md:mx-auto md:mt-[90px]">
+          <div className="w-[85%] sm:w-[100%] md:w-[100%] mx-auto flex justify-between text-center mt-[20px] font-bold text-[20px] p-[20px] bg-[rgba(190,50,50)] text-white rounded-[4px] mb-[20px]">
             <div className="h-auto text-center">
               <p>Rasmi</p>
             </div>
@@ -245,7 +266,9 @@ const Admin = () => {
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  margin: "0 auto"
+                  margin: "0 auto",
+                  position: "relative",
+                  zIndex: 1,
                 }}
               />
             )
@@ -257,7 +280,7 @@ const Admin = () => {
                     <div className="w-[25%] mx-auto text-center items-center flex justify-around">
                       <img className="w-[86px] h-[86px] object-cover" src={item.img} alt={item.name} />
                     </div>
-                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                    <div className="w-[25%] mx-auto text-end items-center flex justify-around">
                       <p>{item.name}</p>
                     </div>
                     <div className="w-[25%] mx-auto text-center items-center flex justify-around">
@@ -268,7 +291,7 @@ const Admin = () => {
                     </div>
                   </summary>
                   <div className="w-[85%] mx-auto items-center text-center">
-                    <div className="w-[50%] flex justify-evenly mx-auto">
+                    <div className="w-[50%] sm:w-[70%] md:w-[70%] lg:w-[60%] flex justify-evenly mx-auto">
                       <button
                         onClick={() => handleShowModal(item.name, item.price, item.type, item.id)}
                         className="bg-orange-500 hover:bg-[orange] text-[white] py-[4px] px-[20px] rounded-[6px] text-[18px] font-bold">Tahrirlash</button>
@@ -278,7 +301,7 @@ const Admin = () => {
                     </div>
                   </div>
                 </details>
-                <hr className="w-[85%] h-[1px] mx-auto bg-slate-500 my-[20px]" />
+                <hr className="w-[85%] h-[1px] sm:w-[95%] mx-auto bg-slate-500 my-[20px]" />
               </Fragment>
             ))}
         </div>
@@ -287,7 +310,7 @@ const Admin = () => {
         <>
           <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] fixed top-0 left-0 z-50"></div>
           <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col fixed top-0 left-0 z-50">
-            <div className="w-[30%] h-[80vh] bg-[#c00a27] flex justify-around m-auto">
+            <div className="sm:w-[80%] h-auto md:w-[55%] lg:w-[44%] bg-[#c00a27] flex justify-around m-auto p-[20px]">
               <form className="w-auto h-[80vh] justify-evenly m-auto flex flex-col">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[38px] font-bold text-[#ffae00]">Yangilash</h2>
@@ -370,19 +393,100 @@ const Admin = () => {
         <>
           <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] fixed top-0 left-0 z-50"></div>
           <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col fixed top-0 left-0 z-50">
-            <div className="w-[60%] h-[30vh] bg-[#c00a27] flex flex-col items-center justify-around m-auto">
-              <h2 className="text-[30px] text-center text-[#ff0000] font-bold p-[20px]">{"Ushbu menuni o'chiriga ishonchingiz komilmi !"}</h2>
-              <div className="w-[40%] flex justify-between">
+            <div className="w-[60%] h-auto bg-[#c00a27] flex flex-col items-center justify-around m-auto p-[20px]">
+              <h2 className="text-[30px] text-center text-[#ff0000] font-bold p-[20px] sm:p-0 sm:mb-[10px] md:p-0 md:mb-[10px]">{"Ushbu menuni o'chiriga ishonchingiz komilmi !"}</h2>
+              <div className="w-[40%] flex justify-between sm:w-[80%] sm:flex-col sm:mt-[10px] md:w-[60%] md:flex-col md:mt-[10px] lg:w-[60%]">
                 <button
                   onClick={() => handleDeleteModal(docId)}
-                  className="bg-[yellow] py-[4px] px-[16px] text-[18px] font-bold text-[black] rounded-[8px]">Bekor qilish</button>
+                  className="bg-[yellow] py-[4px] px-[16px] text-[18px] font-bold text-[black] rounded-[8px] sm:mb-[10px] md:mb-[10px]">Bekor qilish</button>
                 <button
                   onClick={handleDelteDoc}
-                  className="bg-[red] py-[4px] px-[16px] text-[18px] font-bold text-[white] rounded-[8px]">{"O'chirish"}</button>
+                  className="bg-[red] py-[4px] px-[16px] text-[18px] font-bold text-[white] rounded-[8px] sm:mt-[10px] md:mt-[10px]">{"O'chirish"}</button>
               </div>
             </div>
           </div>
         </>
+      )}
+
+      {sidebar && (
+        <div className="w-[100%] md:flex">
+          <div
+            onClick={handleSidebar}
+            className="w-[40%] h-[100vh] fixed top-0 left-0 hidden md:block backdrop-blur-md z-20"></div>
+          <div className="w-[100%] h-[100vh] md:w-[60%] fixed top-0 right-0 z-20 bg-[#c00a27] flex-col justify-between p-[20px] text-center items-center hidden sm:flex md:flex">
+            <div className="w-[100%] flex items-center mx-auto justify-between">
+              <Link to={"/"} className="w-[150px] h-[60px] items-center">
+                <img className="w-[100%] h-[100%]" src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
+              </Link>
+              <div>
+                <IoClose
+                  size={40}
+                  color="#fff"
+                  onClick={handleSidebar}
+                />
+              </div>
+            </div>
+            <div className="w-[100%] text-[35px] font-bold text-[orange]">
+              <h2>Saralash</h2>
+            </div>
+            <div className="w-[100%] h-[45%] flex flex-col justify-evenly">
+              <button
+                onClick={() => handleSort('all')}
+                className={`w-[100%] text-left rounded-[6px] ${sortConfig.field === "all" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+                <div className="py-[4px] px-[20px] text-[20px] font-semibold">Hammasi</div>
+              </button>
+
+              <button
+                onClick={() => handleSort('name')}
+                className={`w-[100%] items-center rounded-[6px] ${sortConfig.field === "name" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+                <div className="py-[4px] px-[20px] text-[20px] font-semibold flex justify-between">
+                  <p>Nomi</p>
+                  {sortConfig.field === "name" && sortConfig.direction === "asc" && (
+                    <IoIosArrowUp color="#ff0000" size={30} className="ml-auto" />
+                  )}
+                  {sortConfig.field === "name" && sortConfig.direction === "desc" && (
+                    <IoIosArrowDown color="#ff0000" size={30} />
+                  )}
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleSort('price')}
+                className={`w-[100%] items-center rounded-[6px] ${sortConfig.field === "price" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+                <div className="py-[4px] px-[20px] text-[20px] font-semibold flex justify-between">
+                  <p>Narxi</p>
+                  {sortConfig.field === "price" && sortConfig.direction === "asc" && (
+                    <IoIosArrowUp color="#ff0000" size={30} />
+                  )}
+                  {sortConfig.field === "price" && sortConfig.direction === "desc" && (
+                    <IoIosArrowDown color="#ff0000" size={30} />
+                  )}
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleSort('type')}
+                className={`w-[100%] items-center rounded-[6px] ${sortConfig.field === "type" ? "bg-[white] text-[red] rounded-[4px]" : "text-[white] hover:bg-[rgba(255,255,255,.5)] duration-200"}`}>
+                <div className="py-[4px] px-[20px] text-[20px] font-semibold flex justify-between">
+                  <p>Turi</p>
+                  {sortConfig.field === "type" && sortConfig.direction === "asc" && (
+                    <IoIosArrowUp color="#ff0000" size={30} className="ml-auto" />
+                  )}
+                  {sortConfig.field === "type" && sortConfig.direction === "desc" && (
+                    <IoIosArrowDown color="#ff0000" size={30} />
+                  )}
+                </div>
+              </button>
+
+            </div>
+            <div
+              onClick={handleLogOut}
+              className="w-[100%] h-auto mx-auto px-[20px] py-[4px] flex justify-between items-center cursor-pointer rounded-[4px] bg-[red] text-[white] hover:bg-[white] hover:text-[red] duration-200">
+              <ImExit width={30} height={30} size={30} />
+              <button className="text-[30px]">Chiqish</button>
+            </div>
+          </div>
+        </div>
       )}
 
     </>

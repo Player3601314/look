@@ -66,6 +66,8 @@ const Nav = (props) => {
     console.log(totalPrice);
 
     setKart(!kart);
+    setShowLang(false)
+    setNav(false)
   }
 
   const clearStorage = () => {
@@ -134,25 +136,26 @@ const Nav = (props) => {
     root.style.overflowY = nav ? "auto" : "hidden"
 
     setNav(!nav)
+    setShowLang(false)
   }
 
   return (
     <>
       <div className="w-[100%] sm:w-[100%] h-[90px] bg-[#c00a27] fixed flex flex-row justify-between px-[40px] sm:px-[20px] py-[20px] items-center z-10">
-        <div className="w-[40%] flex justify-between items-center">
+        <div className="w-[40%] lg:w-[70%] flex justify-between items-center">
           <Link to={"/"} className="w-[200px] h-[40px] sm:w-[100px] sm:h-[20px]">
             <img
               src="http://look.uz/assets/loook-logo-5055c421.svg"
               className="object-cover"
               alt="" />
           </Link>
-          <div className="w-[60%] sm:hidden flex justify-evenly">
+          <div className="w-[60%] sm:hidden md:hidden flex justify-evenly">
             <NavLink className={getClass} to={"/"}>{t("header.home")}</NavLink>
             <NavLink className={getClass} to={"/address"}>{t("header.branches")}</NavLink>
             <NavLink className={getClass} to={"/contact"}>{t("header.contact")}</NavLink>
           </div>
         </div>
-        <div className="w-[20%] flex items-center sm:hidden">
+        <div className="w-[20%] lg:w-[25%] flex items-center sm:hidden md:hidden">
           <div
             onClick={handleOpenCart}
             className="navlinks cursor-pointer">
@@ -192,10 +195,10 @@ const Nav = (props) => {
             </dir>
           )}
         </div>
-        <div className="sm:block hidden">
+        <div className="sm:block md:block hidden">
           <IoMenu
             onClick={handleNav}
-            size={30}
+            className="sm:text-[30px] md:text-[40px]"
             color="#fff"
           />
         </div>
@@ -203,9 +206,9 @@ const Nav = (props) => {
 
       {nav && (
         <>
-          <div className="w-[100%] h-[100vh] sm:block hidden fixed top-0 left-0 z-20">
-            <div onClick={handleNav} className="w-[30%] h-[100%] backdrop-blur-md fixed top-0 left-0"></div>
-            <div className="w-[70%] h-[100%] bg-[#c00a27] fixed top-0 right-0">
+          <div className="w-[100%] h-[100vh] sm:block md:block hidden fixed top-0 left-0 z-20">
+            <div onClick={handleNav} className="sm:w-[30%] h-[100%] md:w-[50%] backdrop-blur-md fixed top-0 left-0"></div>
+            <div className="sm:w-[70%] h-[100%] md:w-[50%] bg-[#c00a27] fixed top-0 right-0">
               <div className="w-[100%] h-auto flex flex-col justify-between">
                 <div className="py-[20px] pl-[20px]">
                   <IoClose
@@ -215,23 +218,66 @@ const Nav = (props) => {
                     color="#fff"
                   />
                 </div>
-                <div className="pb-[20px] pl-[20px]">
+                <div className="pb-[14px] pl-[20px]">
                   <div className="flex items-start">
                     <AiOutlineHome color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
                     <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/"}>{t("header.home")}</NavLink>
                   </div>
                 </div>
-                <div className="pb-[20px] pl-[20px]">
+                <div className="pb-[14px] pl-[20px]">
                   <div className="flex items-start">
                     <IoMapOutline color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
                     <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/address"}>{t("header.branches")}</NavLink>
                   </div>
                 </div>
-                <div className="pb-[20px] pl-[20px]">
+                <div className="pb-[14px] pl-[20px]">
                   <div className="flex items-start">
                     <MdOutlineContactPhone color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
                     <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/contact"}>{t("header.contact")}</NavLink>
                   </div>
+                </div>
+                <div className="w-[100%] flex flex-col pl-[20px]">
+                  <div
+                    onClick={handleOpenCart}
+                    className="navlinks after:m-[0px] cursor-pointer sm:pb-[20px] md:pb-[30px]"
+                  >
+                    <div className="flex items-center text-[#fff] hover:text-[#ffae00] duration-200">
+                      <RiShoppingBagFill size={30} />
+                      <span className="ml-[10px] text-[20px] font-bold">{t("header.cart")}</span>
+                      <span className="w-[35px] h-[25px] rounded-[10px] text-center items-center bottom-[0px] right-[60px] relative bg-[#ffae00] m-auto text-[18px] font-semibold">{item}</span>
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() => setShowLang(!showLang)}
+                    className="w-[100%] flex">
+                    <div className="w-[24px] flex cursor-pointer">
+                      <img className="ml-auto" src={flag[lang]} alt="" />
+                    </div>
+                    <div className="ml-[10px] text-[18px] text-[#fff]">{t("language.word")}</div>
+                  </div>
+                  {showLang && (
+                    <dir className="w-[150px] h-[140px] relative rounded-[8px] p-[12px] flex flex-col justify-around z-[999999]">
+                      <button
+                        onClick={() => { handleLangChange("uzb"), setLang(0), setShowLang(false) }}
+                        className="flex items-center">
+                        <img src={flag[0]} alt="" />
+                        <p className="ml-[20px] text-[#fff] text-[18px] font-medium hover:text-[#c00a27] hover:opacity-70 duration-200">{"O'zbekcha"}</p>
+                      </button>
+                      <button
+                        onClick={() => { handleLangChange("rus"), setLang(1), setShowLang(false) }}
+                        className="flex items-center">
+                        <img src={flag[1]} alt="" />
+                        <p className="ml-[20px] text-[#fff] text-[18px] font-medium hover:text-[#c00a27] hover:opacity-70 duration-200">{"Русский"}</p>
+                      </button>
+                      <button
+                        onClick={() => { handleLangChange("eng"), setLang(2), setShowLang(false) }}
+                        className="flex items-center">
+                        <img src={flag[2]} alt="" />
+                        <p className="ml-[20px] text-[#fff] text-[18px] font-medium hover:text-[#c00a27] hover:opacity-70 duration-200">{"English"}</p>
+                      </button>
+                    </dir>
+                  )}
                 </div>
               </div>
             </div>
@@ -244,15 +290,18 @@ const Nav = (props) => {
           <div className={"w-[100%] h-[100vh] fixed z-50 flex flex-row"}>
             <div
               onClick={handleOpenCart}
-              className="w-[65%] backdrop-blur-[10px]"></div>
-            <div className="w-[35%] bg-[#fff] p-[20px]">
+              className="w-[65%] md:w-[50%] lg:w-[50%] backdrop-blur-[10px] sm:hidden">
+            </div>
+
+            <div className="w-[35%] sm:w-[100%] md:w-[50%] lg:w-[50%] bg-[#fff] p-[20px]">
               <div>
                 <img
                   onClick={handleOpenCart}
-                  className="ml-auto cursor-pointer"
+                  className="w-[30px] ml-auto cursor-pointer"
                   src={closeImg}
                   alt=""
-                /></div>
+                />
+              </div>
               {item === 0 && (
                 <div className="w-[100%] h-[92%] flex flex-col justify-between">
                   <img className="mx-auto" src={searchIcon} alt="" />
@@ -274,7 +323,7 @@ const Nav = (props) => {
                     </div>
                     <div className="w-[100%] h-[1px] bg-black"></div>
                   </div>
-                  <div className="w-[100%] h-[200px] flex flex-col my-[60px] overflow-y-auto">
+                  <div className="w-[100%] h-[200px] sm:h-[100%] flex flex-col my-[60px] overflow-y-auto">
                     {storageData.map(item => (
                       <Fragment key={item.id}>
                         <div className="w-[100%] flex flex-row justify-between items-center my-[20px]">
@@ -300,7 +349,7 @@ const Nav = (props) => {
                               </button>
                             )}
                             <div className="w-[100%] flex items-center justify-between">
-                              <img className="w-[100px] h-[95px] object-cover" src={item.img} alt="" />
+                              <img className="w-[100px] h-[95px] sm:w-[80px] sm:h-[75px] object-cover" src={item.img} alt="" />
                               <p className="text-[16px] w-[100px] text-center font-thin">{item.name}</p>
                             </div>
                           </div>

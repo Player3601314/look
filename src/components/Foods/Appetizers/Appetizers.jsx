@@ -60,7 +60,7 @@ const Appetizers = ({ setStorageData }) => {
   return (
     <div id="appetizers" className="w-[100%] h-auto pt-[200px] px-[40px] sm:px-[10px]">
       <h1 className="text-[40px] mb-[40px] font-bold">APPETIZERS</h1>
-      <div className="w-[90%] grid grid-cols-6 sm:grid-cols-2 gap-[20px] m-auto">
+      <div className="w-[90%] grid grid-cols-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-[20px] m-auto">
         {cards.length === 0
           ?
           (<>

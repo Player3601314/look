@@ -5,6 +5,9 @@
     "contact": "Contact",
     "cart": "Cart"
   },
+  "language": {
+    "word": "Select lang"
+  },
   "button": {
     "add": "Add To Cart"
   },
@@ -13,5 +16,13 @@
   },
   "created": {
     "creater": "This site was created by Abdullayev Muhammad"
+  },
+  "contact": {
+    "heading": "Contacts",
+    "call": "Call-Center / Delivery:",
+    "officeAddres": "Office adress:",
+    "addres": "Alisher Navoiy street, Jizzakh, King Burger",
+    "officeTime": "Office hours:",
+    "email": "Email:"
   }
 }

@@ -50,7 +50,7 @@ const SignAdmin = () => {
 
   return (
     <div className="w-[100%] h-[100vh] flex justify-around items-center">
-      <form className="w-[30%] h-[350px] bg-[#c00a27] items-center text-[#fff] p-[20px]">
+      <form className="w-[30%] h-[350px] sm:w-[80%] bg-[#c00a27] items-center text-[#fff] p-[20px]">
         <div>
           <h2 className="text-[38px] font-bold text-[yellow] text-center">Admin</h2>
         </div>
@@ -73,16 +73,16 @@ const SignAdmin = () => {
           <input
             className="w-[80%] px-[12px] text-black py-[4px] rounded-[4px] bg-yellow-500 focus:bg-[yellow]"
             id="password"
-            type="password" // Corrected typo here
+            type="password"
             required
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
         </div>
         <div className="w-[100%] h-[80px] flex justify-around flex-col text-center my-[20px]">
-          <Link className="w-[170px] m-auto text-[red] " to={"/admin/change-password"}>
+          {/* <Link className="w-[170px] m-auto text-[red] " to={"/admin/change-password"}>
             Parol esdan chiqdimi ?
-          </Link>
+          </Link> */}
           <button
             onClick={handleSignIn}
             className="w-[auto] mx-auto text-[red] text-[20px] font-bold py-[4px] px-[12px] bg-yellow-500 hover:bg-[yellow] rounded-[6px]"
