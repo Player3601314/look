@@ -88,7 +88,7 @@ const Order = ({ storageData, setStorageData }) => {
       <Nav storageData={storageData} setStorageData={setStorageData} />
       <div>
         <div className="w-[80%] h-auto mx-auto pt-[90px] sm:w-[90%]">
-          <div className="w-[100%] h-[100px] py-[20px] flex justify-between items-center">
+          <div className="w-[100%] h-[100px] py-[20px] flex justify-between relative items-center z-20">
             <ImExit className="w-[10%] h-[50%] text-red-500 hover:text-[red] cursor-pointer" onClick={handleLogOut} />
             <div className="text-[28px] flex sm:text-[16px] sm:w-[100%] sm:justify-evenly md:text-[18px]">
               <h4>Qabul qilingan buyurtmalar: </h4>
@@ -326,7 +326,7 @@ const Order = ({ storageData, setStorageData }) => {
           ) : (
             <>
               <Skeleton width={"100%"} height={"100vh"} />
-              <div className="w-[100%] absolute top-[60px] left-0 flex justify-center items-center h-screen">
+              <div className="w-[100%] absolute top-[60px] left-0 flex justify-center items-center h-screen z-0">
                 <div className="bg-gray-200 p-4 rounded-lg shadow-md">
                   <p>{"Yuklanmoqda. Iltimos kutib turing!"}</p>
                 </div>
