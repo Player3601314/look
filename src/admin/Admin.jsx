@@ -183,6 +183,9 @@ const Admin = () => {
           <div className="w-[100%] text-[35px] font-bold text-[orange]">
             <h2>Saralash</h2>
           </div>
+          <Link to={"/admin/create"} className="w-[80%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
+            Yangi menu
+          </Link>
           <div className="w-[80%] h-[45%] flex flex-col justify-evenly">
             <button
               onClick={() => handleSort('all')}
@@ -429,6 +432,9 @@ const Admin = () => {
             <div className="w-[100%] text-[35px] font-bold text-[orange]">
               <h2>Saralash</h2>
             </div>
+            <Link to={"/admin/create"} className="w-[100%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
+              Yangi menu
+            </Link>
             <div className="w-[100%] h-[45%] flex flex-col justify-evenly">
               <button
                 onClick={() => handleSort('all')}

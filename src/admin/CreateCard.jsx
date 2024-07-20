@@ -58,7 +58,7 @@ const CreateCard = () => {
 
   return (
     <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col">
-      <div className="w-[30%] h-[550px] bg-[#c00a27] flex justify-around m-auto">
+      <div className="w-[30%] h-[550px] bg-[#c00a27] flex justify-around m-auto sm:w-[80%] md:w-[60%] lg:w-[42%]">
         <form className="w-auto h-[550px] justify-evenly m-auto flex flex-col" onSubmit={handleCreate}>
           <div><Link to={"/admin"} className="text-[#fff] font-bold">{"< Ortga qaytish"}</Link></div>
           <div>
