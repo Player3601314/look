@@ -166,7 +166,7 @@ const Admin = () => {
 
         <div className="w-[100%] h-[80px] fixed top-0 left-0 items-center hidden sm:flex md:flex p-[20px] md:px-[60px] justify-between bg-[#c00a27] z-10">
           <div className="w-[150px] h-[60px]">
-            <img className="w-[100%] h-[100%]" src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
+            <img className="w-[100%] h-[100%]" src="http://loook.uz/assets/loook-logo-5055c421.svg" alt="" />
           </div>
           <div>
             <IoMenu
@@ -178,7 +178,7 @@ const Admin = () => {
 
         <div className="w-[25%] h-[100vh] lg:w-[30%] fixed top-0 left-0 bg-[#c00a27] flex flex-col justify-between py-[40px] px-[20px] text-center items-center sm:hidden md:hidden">
           <Link to={"/"} className="w-[200px] h-[60px] mx-auto">
-            <img src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
+            <img src="http://loook.uz/assets/loook-logo-5055c421.svg" alt="" />
           </Link>
           <div className="w-[100%] text-[35px] font-bold text-[orange]">
             <h2>Saralash</h2>
@@ -416,7 +416,7 @@ const Admin = () => {
           <div className="w-[100%] h-[100vh] md:w-[60%] fixed top-0 right-0 z-20 bg-[#c00a27] flex-col justify-between p-[20px] text-center items-center hidden sm:flex md:flex">
             <div className="w-[100%] flex items-center mx-auto justify-between">
               <Link to={"/"} className="w-[150px] h-[60px] items-center">
-                <img className="w-[100%] h-[100%]" src="http://look.uz/assets/loook-logo-5055c421.svg" alt="" />
+                <img className="w-[100%] h-[100%]" src="http://loook.uz/assets/loook-logo-5055c421.svg" alt="" />
               </Link>
               <div>
                 <IoClose

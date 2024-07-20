@@ -145,7 +145,7 @@ const Nav = (props) => {
         <div className="w-[40%] lg:w-[70%] flex justify-between items-center">
           <Link to={"/"} className="w-[200px] h-[40px] sm:w-[100px] sm:h-[20px]">
             <img
-              src="http://look.uz/assets/loook-logo-5055c421.svg"
+              src="http://loook.uz/assets/loook-logo-5055c421.svg"
               className="object-cover"
               alt="" />
           </Link>
