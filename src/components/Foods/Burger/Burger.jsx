@@ -60,7 +60,7 @@ const Burger = ({ setStorageData }) => {
   return (
     <div id="burger" className="w-[100%] h-auto pt-[200px] px-[40px] sm:px-[10px]">
       <h1 className="text-[40px] mb-[40px] font-bold">BURGERS</h1>
-      <div className="w-[90%] grid grid-cols-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-[20px] m-auto">
+      <div className="w-[90%] grid grid-cols-6 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-[20px] m-auto sm:justify-around sm:items-center">
         {cards.length === 0
           ?
           (<>
@@ -69,9 +69,9 @@ const Burger = ({ setStorageData }) => {
           :
           cards.filter(data => data.type === "burger").map((data) => (
             <div
-              className="w-[100%] h-[350px] bg-[#fff] sm:w-[90%] rounded-[10px] p-[16px] flex flex-col"
+              className="w-[100%] h-[350px] bg-[#fff] sm:w-[90%] sm:h-auto sm:mx-auto rounded-[10px] p-[16px] flex flex-col"
               key={data.name}>
-              <img src={data.img} className="w-[150px] h-[150px] sm:w-[80%] mx-auto object-cover" alt="" />
+              <img src={data.img} className="w-[150px] h-[150px] sm:w-[80%] sm:h-auto mx-auto object-cover" alt="" />
               <h3 className="sm:w-[80%] sm:mx-auto mt-[20px] font-medium text-[#c00a27]">{data.name}</h3>
               <p className="sm:w-[80%] sm:mx-auto mt-[10px] text-[#309b42]">{data.price} {t("price.value")}</p>
               <button

@@ -17,7 +17,7 @@ export const Slider = () => {
       loop={true}
       autoplay={true}
       pagination={{ clickable: true }}
-      className='w-[90%] m-auto h-[80vh] sm:h-[40vh] md:h-[40vh]'
+      className='w-[95%] m-auto h-[80vh] sm:h-[40vh] md:h-[40vh]'
     >
       <SwiperSlide className='w-[100%] h-[100%] rounded-[18px]'>
         <img className='w-[100%] h-[100%] object-cover rounded-[18px]' src="http://loook.uz/assets/homepage-slider-1-98ea9b48.jpg" alt="" />

@@ -90,7 +90,7 @@ const Order = ({ storageData, setStorageData }) => {
         <div className="w-[80%] h-auto mx-auto pt-[90px] sm:w-[90%]">
           <div className="w-[100%] h-[100px] py-[20px] flex justify-between relative items-center z-20">
             <ImExit className="w-[10%] h-[50%] text-red-500 hover:text-[red] cursor-pointer" onClick={handleLogOut} />
-            <div className="text-[28px] flex sm:text-[16px] sm:w-[100%] sm:justify-evenly md:text-[18px]">
+            <div className="text-[28px] flex sm:text-[12px] sm:w-[100%] sm:justify-evenly sm:items-center sm:px-[5px] md:text-[18px]">
               <h4>Qabul qilingan buyurtmalar: </h4>
               <h4 className="text-[red] font-bold pl-[10px]">{"0"}</h4>
             </div>
@@ -107,7 +107,7 @@ const Order = ({ storageData, setStorageData }) => {
             <>
               {orders.filter(item => item.orderType === filterOrder && item.id !== orderData).map((order) => (
                 <Fragment key={order.id}>
-                  <div className="bg-[#fff] rounded-[6px] items-center flex justify-between sm:flex-col md:flex-col lg:flex-col py-[20px]">
+                  <div className="bg-[#fff] rounded-[6px] items-center flex justify-between sm:flex-col md:flex-col lg:flex-col py-[20px] px-[20px] sm:px-[10px]">
                     <YMaps query={{ lang: 'uz_UZ' }}>
                       <div>
                         <Map
@@ -116,8 +116,7 @@ const Order = ({ storageData, setStorageData }) => {
                             zoom: 12,
                           }}
                           modules={["control.ZoomControl", "control.FullscreenControl"]}
-                          width="350px"
-                          height="350px"
+                          className="w-[350px] h-[350px] sm:w-[250px] sm:h-[250px]"
                         >
                           <Placemark
                             geometry={order.coordinates}
@@ -126,20 +125,20 @@ const Order = ({ storageData, setStorageData }) => {
                         </Map>
                       </div>
                     </YMaps>
-                    <div className="w-[40%] flex flex-col text-left pl-[40px] sm:w-auto sm:p-0  sm:px-[20px] md:w-auto md:p-0 lg:w-auto lg:p-0 sm:my-[20px] md:my-[20px]">
-                      <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
+                    <div className="w-[40%] flex flex-col text-left pl-[40px] sm:w-auto sm:p-0 sm:px-[20px] md:w-auto md:p-0 lg:w-auto lg:p-0 sm:my-[20px] md:my-[20px]">
+                      <div className="text-[40px] font-medium text-left flex sm:text-[20px]">
                         <h2>Ismingiz: </h2>
                         <h2 className="pl-[10px] text-[red] font-bold">{order.userName}</h2>
                       </div>
-                      <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
+                      <div className="text-[40px] font-medium text-left flex sm:text-[20px]">
                         <h2>Telfon: </h2>
                         <h2 className="pl-[10px] text-[red] font-bold">{"+"}{order.phoneNum}</h2>
                       </div>
-                      <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
+                      <div className="text-[40px] font-medium text-left flex sm:text-[20px]">
                         <h2>Telfon: </h2>
                         <h2 className="pl-[10px] text-[red] font-bold">{order.totalPrice}{t("price.value")}</h2>
                       </div>
-                      <div className="text-[40px] font-medium text-left flex sm:text-[30px]">
+                      <div className="text-[40px] font-medium text-left flex sm:text-[20px]">
                         <h2>{"To'lov turi: "} </h2>
                         <h2 className="pl-[10px] text-[red] font-bold">{order.radio}</h2>
                       </div>
@@ -203,7 +202,7 @@ const Order = ({ storageData, setStorageData }) => {
                           </div>
                           {item.img && (
                             <div
-                              className="w-[100%] h-[350px] bg-[#fff] sm:w-[350px] sm:mx-auto rounded-[10px] p-[16px] hidden sm:flex md:w-[50%] md:flex md:mx-auto flex-col text-[red] font-bold sm:my-[20px]"
+                              className="w-[100%] h-[350px] bg-[#fff] sm:w-auto sm:h-auto sm:mx-auto rounded-[10px] p-[16px] hidden sm:flex md:w-[50%] md:h-auto md:flex md:mx-auto flex-col text-[red] font-bold sm:my-[20px] md:my-[20px]"
                               key={item.name}
                             >
                               <img src={item.img} className="w-[150px] h-auto sm:w-[80%] mx-auto object-cover md:w-[100%]" alt="" />
@@ -243,8 +242,7 @@ const Order = ({ storageData, setStorageData }) => {
                             zoom: 12,
                           }}
                           modules={["control.ZoomControl", "control.FullscreenControl"]}
-                          width="350px"
-                          height="350px"
+                          className="w-[300px] h-[20px]"
                         >
                           <Placemark
                             geometry={order.coordinates}

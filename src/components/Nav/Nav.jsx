@@ -141,7 +141,7 @@ const Nav = (props) => {
 
   return (
     <>
-      <div className="w-[100%] sm:w-[100%] h-[90px] bg-[#c00a27] fixed flex flex-row justify-between px-[40px] sm:px-[20px] py-[20px] items-center z-10">
+      <div className="w-[100%] sm:w-[100%] h-[90px] bg-[#c00a27] fixed flex flex-row justify-between px-[40px] sm:px-[10px] py-[20px] items-center z-30">
         <div className="w-[40%] lg:w-[70%] flex justify-between items-center">
           <Link to={"/"} className="w-[200px] h-[40px] sm:w-[100px] sm:h-[20px]">
             <img
@@ -167,10 +167,10 @@ const Nav = (props) => {
           </div>
           <div
             onClick={() => setShowLang(!showLang)}
-            className="w-[80%] m-auto flex cursor-pointer"
+            className="w-[55px] ml-auto flex cursor-pointer justify-between"
           >
             <img className="ml-auto" src={flag[lang]} alt="" />
-            <img className={showLang ? "mr-auto transform rotate-180 duration-300" : "mr-auto duration-300"} src={arrowIcon} alt="" />
+            <img className={showLang ? "w-[30px] mx-auto transform rotate-180 duration-300" : "w-[30px] mx-auto duration-300"} src={arrowIcon} alt="" />
           </div>
           {showLang && (
             <dir className="w-[150px] h-[120px] absolute top-[60px] right-0 bg-[#ffae00] rounded-[8px] p-[6px] flex flex-col justify-around z-[999999]">
@@ -206,7 +206,7 @@ const Nav = (props) => {
 
       {nav && (
         <>
-          <div className="w-[100%] h-[100vh] sm:block md:block hidden fixed top-0 left-0 z-20">
+          <div className="w-[100%] h-[100vh] sm:block md:block hidden fixed top-0 left-0 z-30">
             <div onClick={handleNav} className="sm:w-[30%] h-[100%] md:w-[50%] backdrop-blur-md fixed top-0 left-0"></div>
             <div className="sm:w-[70%] h-[100%] md:w-[50%] bg-[#c00a27] fixed top-0 right-0">
               <div className="w-[100%] h-auto flex flex-col justify-between">
@@ -221,19 +221,19 @@ const Nav = (props) => {
                 <div className="pb-[14px] pl-[20px]">
                   <div className="flex items-start">
                     <AiOutlineHome color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
-                    <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/"}>{t("header.home")}</NavLink>
+                    <NavLink className={getClass} onClick={handleNav} style={{ marginLeft: "20px" }} to={"/"}>{t("header.home")}</NavLink>
                   </div>
                 </div>
                 <div className="pb-[14px] pl-[20px]">
                   <div className="flex items-start">
                     <IoMapOutline color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
-                    <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/address"}>{t("header.branches")}</NavLink>
+                    <NavLink className={getClass} onClick={handleNav} style={{ marginLeft: "20px" }} to={"/address"}>{t("header.branches")}</NavLink>
                   </div>
                 </div>
                 <div className="pb-[14px] pl-[20px]">
                   <div className="flex items-start">
                     <MdOutlineContactPhone color={getClass === "active" ? "#ffae00" : "#fff"} size={32} />
-                    <NavLink className={getClass} style={{ marginLeft: "20px" }} to={"/contact"}>{t("header.contact")}</NavLink>
+                    <NavLink className={getClass} onClick={handleNav} style={{ marginLeft: "20px" }} to={"/contact"}>{t("header.contact")}</NavLink>
                   </div>
                 </div>
                 <div className="w-[100%] flex flex-col pl-[20px]">
@@ -244,7 +244,7 @@ const Nav = (props) => {
                     <div className="flex items-center text-[#fff] hover:text-[#ffae00] duration-200">
                       <RiShoppingBagFill size={30} />
                       <span className="ml-[10px] text-[20px] font-bold">{t("header.cart")}</span>
-                      <span className="w-[35px] h-[25px] rounded-[10px] text-center items-center bottom-[0px] right-[60px] relative bg-[#ffae00] m-auto text-[18px] font-semibold">{item}</span>
+                      <span className="w-[35px] h-[25px] rounded-[10px] text-center items-center bottom-[0px] right-[35px] relative bg-[#ffae00] m-auto text-[18px] font-semibold">{item}</span>
                     </div>
                   </div>
 

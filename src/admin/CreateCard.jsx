@@ -58,13 +58,13 @@ const CreateCard = () => {
 
   return (
     <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col">
-      <div className="w-[30%] h-[550px] bg-[#c00a27] flex justify-around m-auto sm:w-[80%] md:w-[60%] lg:w-[42%]">
+      <div className="w-[30%] h-[550px] bg-[#c00a27] flex justify-around m-auto sm:w-[95%] md:w-[60%] lg:w-[42%]">
         <form className="w-auto h-[550px] justify-evenly m-auto flex flex-col" onSubmit={handleCreate}>
           <div><Link to={"/admin"} className="text-[#fff] font-bold">{"< Ortga qaytish"}</Link></div>
           <div>
             <h2 className="text-[38px] font-bold text-[#ffae00]">{"Menu qo'shish"}</h2>
           </div>
-          <div className="w-[300px]">
+          <div className="w-[300px] sm:w-[100%]">
             <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="name">
               Nomi:
             </label>
@@ -77,7 +77,7 @@ const CreateCard = () => {
               onChange={handleNameChange}
             />
           </div>
-          <div className="w-[300px]">
+          <div className="w-[300px] sm:w-[100%]">
             <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="price">
               Narxi:
             </label>
@@ -90,7 +90,7 @@ const CreateCard = () => {
               onChange={handlePriceChange}
             />
           </div>
-          <div className="w-[300px]">
+          <div className="w-[300px] sm:w-[100%]">
             <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="type">
               Tur:
             </label>
@@ -147,7 +147,7 @@ const CreateCard = () => {
               </option>
             </select>
           </div>
-          <div className="w-[300px] bg-orange-500 hover:bg-[#ffae00] rounded-[6px] cursor-pointer flex items-center">
+          <div className="w-[300px] sm:w-[100%] bg-orange-500 hover:bg-[#ffae00] rounded-[6px] cursor-pointer flex items-center">
             <label className="w-[100%] text-center cursor-pointer text-[#fff] py-[6px] m-auto font-bold rounded-[6px]" htmlFor="img">
               Rasmni tanlang
             </label>

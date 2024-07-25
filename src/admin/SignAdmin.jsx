@@ -50,7 +50,7 @@ const SignAdmin = () => {
 
   return (
     <div className="w-[100%] h-[100vh] flex justify-around items-center">
-      <form className="w-[30%] h-[350px] sm:w-[80%] bg-[#c00a27] items-center text-[#fff] p-[20px]">
+      <form className="w-[30%] h-[350px] sm:w-[80%] bg-[#c00a27] items-center text-[#fff] p-[20px] md:w-[60%]">
         <div>
           <h2 className="text-[38px] font-bold text-[yellow] text-center">Admin</h2>
         </div>

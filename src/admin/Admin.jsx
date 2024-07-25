@@ -129,6 +129,8 @@ const Admin = () => {
   const sortCardsBy = (data) => {
     const { field, direction } = sortConfig;
 
+    setSidebar(false)
+
     return data.sort((a, b) => {
       let comparison = 0;
       if (a[field] > b[field]) {
@@ -164,7 +166,7 @@ const Admin = () => {
     <>
       <div className="w-[100%] h-[100vh] flex justify-between sm:flex-col">
 
-        <div className="w-[100%] h-[80px] fixed top-0 left-0 items-center hidden sm:flex md:flex p-[20px] md:px-[60px] justify-between bg-[#c00a27] z-10">
+        <div className="w-[100%] h-[80px] fixed top-0 left-0 items-center hidden sm:flex md:flex p-[20px] sm:px-[5px] md:px-[60px] justify-between bg-[#c00a27] z-10">
           <div className="w-[150px] h-[60px]">
             <img className="w-[100%] h-[100%]" src="http://loook.uz/assets/loook-logo-5055c421.svg" alt="" />
           </div>
@@ -183,7 +185,7 @@ const Admin = () => {
           <div className="w-[100%] text-[35px] font-bold text-[orange]">
             <h2>Saralash</h2>
           </div>
-          <Link to={"/admin/create"} className="w-[80%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
+          <Link onClick={() => setSidebar(false)} to={"/admin/create"} className="w-[80%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
             Yangi menu
           </Link>
           <div className="w-[80%] h-[45%] flex flex-col justify-evenly">
@@ -243,8 +245,8 @@ const Admin = () => {
             <button className="text-[30px]">Chiqish</button>
           </div>
         </div>
-        <div className="w-[75%] lg:w-[70%] sm:w-[100%] md:w-[80%] ml-auto sm:mx-auto sm:mt-[90px] md:mx-auto md:mt-[90px]">
-          <div className="w-[85%] sm:w-[100%] md:w-[100%] mx-auto flex justify-between text-center mt-[20px] font-bold text-[20px] p-[20px] bg-[rgba(190,50,50)] text-white rounded-[4px] mb-[20px]">
+        <div className="w-[75%] lg:w-[70%] sm:w-[100%] md:w-[85%] ml-auto sm:mx-auto sm:mt-[90px] md:mx-auto md:mt-[90px]">
+          <div className="w-[85%] sm:w-[100%] md:w-[100%] mx-auto flex justify-between text-center mt-[20px] font-bold text-[20px] p-[20px] bg-[rgba(190,50,50)] text-white rounded-[4px] mb-[20px] sm:px-[10px] sm:py-[14px]">
             <div className="h-auto text-center">
               <p>Rasmi</p>
             </div>
@@ -279,22 +281,22 @@ const Admin = () => {
             cards.map((item) => (
               <Fragment key={item.id}>
                 <details>
-                  <summary className="w-[100%] mx-auto flex justify-between text-center font-bold text-[20px] cursor-pointer">
-                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                  <summary className="w-[100%] sm:w-[95%] mx-auto flex justify-between text-center font-bold text-[16px] cursor-pointer">
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-start">
                       <img className="w-[86px] h-[86px] object-cover" src={item.img} alt={item.name} />
                     </div>
-                    <div className="w-[25%] mx-auto text-end items-center flex justify-around">
+                    <div className="mx-auto sm:text-center sm:text-[14px] md:text-center text-end items-center flex justify-around">
                       <p>{item.name}</p>
                     </div>
-                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-end px-[5px] sm:text-center sm:text-[14px] md:text-center">
                       <p>{item.price}</p>
                     </div>
-                    <div className="w-[25%] mx-auto text-center items-center flex justify-around">
+                    <div className="w-[25%] mx-auto text-center items-center flex justify-end px-[5px] sm:text-center sm:text-[14px] md:text-center">
                       <p>{item.type}</p>
                     </div>
                   </summary>
-                  <div className="w-[85%] mx-auto items-center text-center">
-                    <div className="w-[50%] sm:w-[70%] md:w-[70%] lg:w-[60%] flex justify-evenly mx-auto">
+                  <div className="w-[85%] mx-auto items-center text-center mt-[10px]">
+                    <div className="w-[50%] sm:w-[100%] md:w-[70%] lg:w-[60%] flex justify-evenly mx-auto">
                       <button
                         onClick={() => handleShowModal(item.name, item.price, item.type, item.id)}
                         className="bg-orange-500 hover:bg-[orange] text-[white] py-[4px] px-[20px] rounded-[6px] text-[18px] font-bold">Tahrirlash</button>
@@ -304,7 +306,7 @@ const Admin = () => {
                     </div>
                   </div>
                 </details>
-                <hr className="w-[85%] h-[1px] sm:w-[95%] mx-auto bg-slate-500 my-[20px]" />
+                <hr className="w-[90%] h-[1px] sm:w-[95%] mx-auto bg-slate-500 my-[20px]" />
               </Fragment>
             ))}
         </div>
@@ -432,7 +434,7 @@ const Admin = () => {
             <div className="w-[100%] text-[35px] font-bold text-[orange]">
               <h2>Saralash</h2>
             </div>
-            <Link to={"/admin/create"} className="w-[100%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
+            <Link to={"/admin/create"} className="w-[100%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px] sm:text-[18px]">
               Yangi menu
             </Link>
             <div className="w-[100%] h-[45%] flex flex-col justify-evenly">
@@ -487,7 +489,8 @@ const Admin = () => {
             </div>
             <div
               onClick={handleLogOut}
-              className="w-[100%] h-auto mx-auto px-[20px] py-[4px] flex justify-between items-center cursor-pointer rounded-[4px] bg-[red] text-[white] hover:bg-[white] hover:text-[red] duration-200">
+              className="w-[100%] h-auto mx-auto px-[20px] py-[4px] sm:px-[6px] sm:text-[30px 
+              ] flex justify-between items-center cursor-pointer rounded-[4px] bg-[red] text-[white] hover:bg-[white] hover:text-[red] duration-200">
               <ImExit width={30} height={30} size={30} />
               <button className="text-[30px]">Chiqish</button>
             </div>
