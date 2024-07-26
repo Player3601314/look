@@ -25,6 +25,7 @@ const Admin = () => {
 
   const [sortConfig, setSortConfig] = useState({ field: 'all', direction: 'asc' });
   const cardCollection = collection(firestore, "cards");
+  let root = document.getElementsByTagName("html")[0];
   console.log(cards);
   console.log(sortConfig);
 
@@ -103,7 +104,6 @@ const Admin = () => {
   };
 
   const handleShowModal = (name, price, type, id) => {
-    let root = document.getElementsByTagName("html")[0];
     root.style.overflowY = showModal ? "auto" : "hidden";
 
     setInpName(name);
@@ -114,7 +114,6 @@ const Admin = () => {
   };
 
   const handleDeleteModal = (id) => {
-    let root = document.getElementsByTagName("html")[0];
     root.style.overflowY = deleteModal ? "auto" : "hidden";
 
     setDocId(id)
@@ -152,11 +151,11 @@ const Admin = () => {
 
   const handleLogOut = () => {
     const data = localStorage.setItem("user", null)
+    root.style.removeProperty('overflow-y');
     dispatch({ type: "LOGOUT", payload: data })
   }
 
-  const handleSidebar = () => {
-    let root = document.getElementsByTagName("html")[0]
+  const linkScroll = () => {
     root.style.overflowY = sidebar ? "auto" : "hidden"
 
     setSidebar(!sidebar)
@@ -172,20 +171,20 @@ const Admin = () => {
           </div>
           <div>
             <IoMenu
-              onClick={handleSidebar}
+              onClick={linkScroll}
               size={30}
               color="#fff" />
           </div>
         </div>
 
         <div className="w-[25%] h-[100vh] lg:w-[30%] fixed top-0 left-0 bg-[#c00a27] flex flex-col justify-between py-[40px] px-[20px] text-center items-center sm:hidden md:hidden">
-          <Link to={"/"} className="w-[200px] h-[60px] mx-auto">
+          <Link onClick={linkScroll} to={"/"} className="w-[200px] h-[60px] mx-auto">
             <img src="http://loook.uz/assets/loook-logo-5055c421.svg" alt="" />
           </Link>
           <div className="w-[100%] text-[35px] font-bold text-[orange]">
             <h2>Saralash</h2>
           </div>
-          <Link onClick={() => setSidebar(false)} to={"/admin/create"} className="w-[80%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
+          <Link onClick={linkScroll} to={"/admin/create"} className="w-[80%] text-[20px] font-bold text-[#fff] bg-[orange] px-[20px] py-[4px] rounded-[4px]">
             Yangi menu
           </Link>
           <div className="w-[80%] h-[45%] flex flex-col justify-evenly">
@@ -315,21 +314,21 @@ const Admin = () => {
         <>
           <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] fixed top-0 left-0 z-50"></div>
           <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col fixed top-0 left-0 z-50">
-            <div className="sm:w-[80%] h-auto md:w-[55%] lg:w-[44%] bg-[#c00a27] flex justify-around m-auto p-[20px]">
-              <form className="w-auto h-[80vh] justify-evenly m-auto flex flex-col">
+            <div className="sm:w-[90%] h-auto md:w-[55%] lg:w-[44%] bg-[#c00a27] flex justify-around m-auto p-[20px]">
+              <form className="w-[100%] h-[80vh] justify-evenly m-auto flex flex-col">
                 <div className="flex items-center justify-between">
                   <h2 className="text-[38px] font-bold text-[#ffae00]">Yangilash</h2>
                   <IoClose size={40} onClick={() => handleShowModal(inpName, inpPrice, type, docId)} className="text-[#ffae00] hover:text-[red] cursor-pointer" />
                 </div>
-                <div className="w-[300px]">
+                <div className="w-[100%]">
                   <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="name">Nomi:</label><br />
                   <input id="name" className="text-[#fff] w-[100%] py-[4px] rounded-[6px] bg-orange-500 border-[4px] focus:bg-[#ffae00] px-[12px] placeholder:text-[rgba(255,255,255,.5)]" type="text" placeholder="Lavash" onChange={handleNameChange} value={inpName} />
                 </div>
-                <div className="w-[300px]">
+                <div className="w-[100%]">
                   <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="price">Narxi:</label><br />
                   <input id="price" className="text-[#fff] w-[100%] py-[4px] rounded-[6px] bg-orange-500 border-[4px] focus:bg-[#ffae00] px-[12px] placeholder:text-[rgba(255,255,255,.5)]" type="text" placeholder="17,000" onChange={handlePriceChange} value={inpPrice} />
                 </div>
-                <div className="w-[300px]">
+                <div className="w-[100%]">
                   <label className="text-[#fff] font-semibold cursor-pointer py-[4px]" htmlFor="price">Tur:</label><br />
                   <select
                     id="type"
@@ -383,7 +382,7 @@ const Admin = () => {
                     </option>
                   </select>
                 </div>
-                <div className="w-[300px] bg-orange-500 hover:bg-[#ffae00] rounded-[6px] cursor-pointer flex items-center">
+                <div className="w-[100%] bg-orange-500 hover:bg-[#ffae00] rounded-[6px] cursor-pointer flex items-center">
                   <label className="w-[100%] text-center cursor-pointer text-[#fff] py-[6px] m-auto font-bold rounded-[6px]" htmlFor="img">Rasmni tanlang</label>
                   <input id="img" className="hidden" type="file" onChange={(e) => handleUpload(e)} />
                 </div>
@@ -398,7 +397,7 @@ const Admin = () => {
         <>
           <div onClick={() => setShowModal(!showModal)} className="w-[100%] h-[100vh] backdrop-blur-[10px] fixed top-0 left-0 z-50"></div>
           <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col fixed top-0 left-0 z-50">
-            <div className="w-[60%] h-auto bg-[#c00a27] flex flex-col items-center justify-around m-auto p-[20px]">
+            <div className="w-[60%] h-auto sm:w-[90%] bg-[#c00a27] flex flex-col items-center justify-around m-auto p-[20px]">
               <h2 className="text-[30px] text-center text-[#ff0000] font-bold p-[20px] sm:p-0 sm:mb-[10px] md:p-0 md:mb-[10px]">{"Ushbu menuni o'chiriga ishonchingiz komilmi !"}</h2>
               <div className="w-[40%] flex justify-between sm:w-[80%] sm:flex-col sm:mt-[10px] md:w-[60%] md:flex-col md:mt-[10px] lg:w-[60%]">
                 <button
@@ -416,7 +415,7 @@ const Admin = () => {
       {sidebar && (
         <div className="w-[100%] md:flex">
           <div
-            onClick={handleSidebar}
+            onClick={linkScroll}
             className="w-[40%] h-[100vh] fixed top-0 left-0 hidden md:block backdrop-blur-md z-20"></div>
           <div className="w-[100%] h-[100vh] md:w-[60%] fixed top-0 right-0 z-20 bg-[#c00a27] flex-col justify-between p-[20px] text-center items-center hidden sm:flex md:flex">
             <div className="w-[100%] flex items-center mx-auto justify-between">
@@ -427,7 +426,7 @@ const Admin = () => {
                 <IoClose
                   size={40}
                   color="#fff"
-                  onClick={handleSidebar}
+                  onClick={linkScroll}
                 />
               </div>
             </div>

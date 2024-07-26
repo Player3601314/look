@@ -56,11 +56,20 @@ const CreateCard = () => {
     }
   };
 
+  const handleScroll = () => {
+    const root = document.getElementsByTagName('html')[0];
+    root.style.removeProperty('overflow-y');
+  };
+
   return (
     <div className="w-[100%] h-[100vh] flex justify-around items-center flex-col">
       <div className="w-[30%] h-[550px] bg-[#c00a27] flex justify-around m-auto sm:w-[95%] md:w-[60%] lg:w-[42%]">
         <form className="w-auto h-[550px] justify-evenly m-auto flex flex-col" onSubmit={handleCreate}>
-          <div><Link to={"/admin"} className="text-[#fff] font-bold">{"< Ortga qaytish"}</Link></div>
+          <div>
+            <Link onClick={handleScroll} to={"/admin"} className="text-[#fff] font-bold">
+              {"< Ortga qaytish"}
+            </Link>
+          </div>
           <div>
             <h2 className="text-[38px] font-bold text-[#ffae00]">{"Menu qo'shish"}</h2>
           </div>
